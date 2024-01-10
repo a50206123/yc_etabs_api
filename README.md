@@ -2,10 +2,26 @@
 
 ## v0.0 Develping 
 
-### Create Notes 
-+ ETABS 
+### Create Notes
+----- 
+### OUTLINE
++ ETABS : main class
+    + get_version()
+    + set_units(
+        force_unit -> str,
+        length_unit -> str
+        )
+    + save_edb()
+    + export_e2k()
+    + export_mdb()
+    + import_e2k(
+        filename -> str
+        )
+    + import_excel(
+        filename -> str
+        )
 
-+ Table
++ Table : Get & Set model database
     + read (
         key -> str, 
         col -> list = None  
@@ -15,7 +31,7 @@
         df -> pandas.df 
         )
 
-+ Point 
++ Point : For geometry of point
     + add (
         [x -> float, 
          y -> float, 
@@ -37,7 +53,7 @@
         label -> int,
         story -> str, 
         ) return unique -> int
-+ Frame 
++ Frame : For geometry of frame
     + add (
         [point1 -> int, 
          point2 -> int], 
@@ -58,7 +74,7 @@
         label -> int,
         story -> str, 
         ) return unique -> int
-+ Shell 
++ Shell : For geometry of shell
     + add (
         [points -> int], 
         sect -> str, 
@@ -78,7 +94,7 @@
         story -> str, 
         ) return unique -> int
 
-+ Define
++ Define : For Definition Setting
     + material_add (
         name -> str,
         props -> dict,
@@ -112,7 +128,7 @@
         design_data -> dict
         )
     + spring_add (
-        stype -> int,
+        stype -> str,
         name -> str,
         stiff -> dict,
         linear -> int
@@ -122,8 +138,35 @@
         is_semi_rigid -> bool = False
         )
 
-+ Assign
++ Assign : For Assignments
     + frame_section (
         unique -> int,
         sect -> str
+        )
+    + frame_property_modifier(
+        unique -> int,
+        modifier -> dict,
+        is_replace -> bool = True
+        )
+    + frame_rigid_zone (
+        unique -> int,
+        rigid_zone -> float
+        )
+    + frame_spring (
+        unique -> int,
+        spring_name -> str,
+        spring_stiff -> float
+        )
+    + shell_section (
+        stype -> str
+        unique -> int,
+        sect -> str
+        )
+    + shell_diaphragm (
+        unique -> int,
+        diaphragm_name -> str
+        )
+    + shell_automash (
+        unique -> int,
+        automash_setting -> dict
         )
