@@ -7,24 +7,24 @@
 
 + Table
     + read (
-        key -> str,
-        col -> list = None 
+        key -> str, 
+        col -> list = None  
         ) return table -> pandas.df 
     + write (
-        key -> str,
-        df -> pandas.df
+        key -> str, 
+        df -> pandas.df 
         )
 
 + Point 
     + add (
-        x -> float,
-        y -> float,
-        z -> float,
+        x -> float, 
+        y -> float, 
+        z -> float, 
         ) return unique -> int 
     + modify (
-        unique -> str,
-        x -> float,
-        y -> float,
-        z -> float,
-        )
+        unique -> str, 
+        x -> float, 
+        y -> float, 
+        z -> float, 
+        ) 
         
