@@ -3,7 +3,7 @@ import os
 import sys
 import comtypes.client
 
-from point import Point
+# from geometry import Point
 
 # Units Number Dictory
 force_units = {
@@ -64,7 +64,7 @@ class ETABS :
         self.set_units()
         self.version = self.get_version()
         
-        self.Point = Point(etabs)
+        # self.Point = Point(etabs)
     
     def get_version(self) :
         ver = self.sapModel.GetVersion()[0]
