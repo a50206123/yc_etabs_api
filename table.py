@@ -59,11 +59,14 @@ class Table :
             return True
         else :
             return False
-        
+    
+    #### GET BASIC SETTING
     def get_story(self,col = None) :
         return self.read('Story Definitions', col)
     
     #### GET CONNECTIVITY
+    ## case = 0 --> UniqueName ...
+    ## case = 1 --> Label(Bay) Story ...
     def get_points(self,col = None, case = None) :
         key = 'Point Object Connectivity'
         if case != None :
@@ -101,6 +104,8 @@ class Table :
         return self.read(key, col)
     
     #### GET ASSIGNMENTS
+    ## case = 0 --> UniqueName ...
+    ## case = 1 --> Label(Bay) Story ...
     def get_frame_sect_prop(self, col = None, case = None) :
         key = 'Frame Assignments - Section Properties'
         if case != None :

@@ -5,6 +5,9 @@ import comtypes.client
 
 from api_setting_numbers import *
 
+import geometry as geo
+import table as tb
+
 
 # Units Number Dictory
 
@@ -14,9 +17,7 @@ class ETABS :
         self.etabs = None
         self.sap = None
         self.success = False
-        
-        
-        
+    
         try:  
             #To get the active ETABS object
             # helper = comtypes.client.CreateObject('ETABSv1.Helper') # CSI code
@@ -38,7 +39,10 @@ class ETABS :
         self.set_units()
         self.version = self.get_version()
         
-        # self.Point = Point(etabs)
+        #### Loading Other Objects
+        self.Table = tb.Table(etabs)
+        self.Points = geo.Points(etabs)
+        self.Frames = geo.Frames(etabs)
     
     def get_version(self) :
         ver = self.sapModel.GetVersion()[0]
@@ -53,10 +57,7 @@ class ETABS :
         for units, num in units2num.items() :
             if num == n :
                 return units.split('_')
-        
-    def create_pt(self, x, y, z) :
-        # Return PtLabel, returnValue
-        return self.sap.PointObj.AddCartesian(x, y, z)
+    
             
 if __name__ == '__main__' :
     et = ETABS()
