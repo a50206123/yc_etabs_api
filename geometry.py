@@ -11,7 +11,7 @@ class GeometryObj :
     def modify(self) :
         pass
     
-class Point(GeometryObj) :
+class Points(GeometryObj) :
     def __init__(self, etabs):
         super.__init__(self, etabs)
 

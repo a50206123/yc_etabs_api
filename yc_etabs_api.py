@@ -3,36 +3,10 @@ import os
 import sys
 import comtypes.client
 
-# from geometry import Point
+from api_setting_numbers import *
+
 
 # Units Number Dictory
-force_units = {
-    'N' : 3, 
-    'kN' : 4,  
-    'kgf' : 5, 
-    'tonf' : 6
-}
-
-length_units = {
-    'mm' : 4, 
-    'cm' : 5, 
-    'm' : 6
-}
-
-enum_units = {
-        'kn_mm' : 5,
-        'kn_m' : 6,
-        'kgf_mm' : 7,
-        'kgf_m' : 8,
-        'n_mm' : 9,
-        'n_m' : 10,
-        'tonf_mm' : 11,
-        'tonf_m' : 12,
-        'kn_cm' : 13,
-        'kgf_cm' : 14,
-        'n_cm' : 15,
-        'tonf_cm' : 16,
-}
 
 class ETABS :
     def __init__(self, software : str = 'ETABS'):
@@ -71,12 +45,14 @@ class ETABS :
         return ver
     
     def set_units(self, units = ['tonf', 'm']) :
-        # force = force_units[units[0]]
-        # length = length_units[units[1]]
-        
-        num = enum_units[f'{units[0]}_{units[1]}'.lower()]
-        
+        num = units2num[f'{units[0]}_{units[1]}'.lower()] 
         self.sapModel.SetPresentUnits(num)
+        
+    def get_units(self) :
+        n = self.sapModel.GetPresentUnits()
+        for units, num in units2num.items() :
+            if num == n :
+                return units.split('_')
         
     def create_pt(self, x, y, z) :
         # Return PtLabel, returnValue
@@ -90,4 +66,4 @@ if __name__ == '__main__' :
     
     # print(et.create_pt(0,0,10))
     
-    print(et.Point.get(1))
+    # print(et.Point.get(1))
