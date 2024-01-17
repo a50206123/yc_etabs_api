@@ -6,6 +6,7 @@ class GeometryObj :
         
         self.etabs = etabs
         self.sapModel = sapModel
+        self.Table = tb.Table(etabs)
 
     def add(self) :
         pass
@@ -35,19 +36,61 @@ class Points(GeometryObj) :
     def selected(self):
         return self.sapModel.PointObj.GetAllPoints(0,[],[],[],[])
     
+    def get_all(self, case=0) :
+        pts = self.Table.get_points(case = case)
+
+        pts_dict = {}
+        if case == 0 :
+            unique = pts['UniqueName']
+            X = pts['X']
+            Y = pts['Y']
+            Z = pts['Z']
+
+            for name, x,y,z in unique,X,Y,Z :
+                pts_dict[name] = [x, y, z]
+        elif case == 1 :
+            bays = pts['PointBay']
+            stories = pts['Story']
+            X = pts['X']
+            Y = pts['Y']
+            Z = pts['Z']
+
+            for bay, story, x, y, z in bays, stories, X, Y, Z :
+                pts[story+bay] = [x, y, z]
+
+        return pts_dict
+
+    
 class Frames(GeometryObj) :
     def __init__(self, etabs) :
         super.__init__(self, etabs)
     
     #----- Geometry -----#
-    def add(self, coor1 : list, coor2 : list) :
+    def add(self, inputs:list, add_mode=0, sect_prop="Default", rotate=0) :
         sapModel = self.sapModel
-        XI, YI, ZI = coor1
-        XJ, YJ, ZJ = coor2
+
         Name = []
-        unique, returnValue = sapModel.FrameObj.AddByCoor(XI, YI,\
-                                ZI, XJ, YJ, ZJ, Name) # API
-        return unique
+        PropName = sect_prop
+        UserName = ''
+        CSys = 'Global'
+        if add_mode == 0 :
+            XI, YI, ZI = inputs[0]
+            XJ, YJ, ZJ = inputs[1]
+            unique, returnValue = sapModel.FrameObj.AddByCoor(XI, YI,
+                                    ZI, XJ, YJ, ZJ, Name, PropName, UserName, CSys) # API
+        elif add_mode == 1:
+            Point1, Point2 = inputs
+            unique, returnValue = sapModel.FrameObj.AddByPoint(Point1, 
+	                                Point2, Name, PropName, UserName) # API
+        else :
+            returnValue = 1
+        
+        if returnValue == 0 :
+            print(f'Frame {unique} added successfully.')
+            return unique
+        else :
+            print('No Frame Added.')
+            return None
     
     def delete(self, unique) :
         sapModel = self.sapModel
@@ -58,17 +101,38 @@ class Areas(GeometryObj) :
         super.__init__(self, etabs)
     
     #----- Geometry -----#
-    def add(self, X : list, Y : list, Z : list, prop = "Default") :
+    def add(self, inputs:list, add_mode=0, sect_prop="Default", rotate=0) :
         sapModel = self.sapModel
-        NumberPoints = len(X)
-        Name = ''
-        PropName = prop
+
+        NumberPoints = len(inputs)
+        Name = []
+        PropName = sect_prop
         UserName = ''
         CSys = 'Global'
-        unique, returnValue = sapModel.AreaObj.\
-            AddByCoor(NumberPoints, X, Y, Z, Name, \
-                      PropName, UserName, CSys)) # API
-        return unique
+        if add_mode == 0 :
+            X = []
+            Y = []
+            Z = []
+            for coor in inputs:
+                X.append(coor[0])
+                Y.append(coor[1])
+                Z.append(coor[2])
+
+            unique, returnValue = sapModel.AreaObj.AddByCoord(NumberPoints, 
+                                        	X, Y, Z, Name, PropName, UserName, CSys) # API
+        elif add_mode == 1:
+            Point = inputs
+            unique, returnValue = sapModel.AreaObj.AddByPoint(NumberPoints, 
+                                        	Point, Name, PropName, UserName) # API
+        else :
+            returnValue = 1
+        
+        if returnValue == 0 :
+            print(f'Frame {unique} added successfully.')
+            return unique
+        else :
+            print('No Frame Added.')
+            return None
     
     def delete(self, unique) :
         sapModel = self.sapModel
