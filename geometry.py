@@ -60,6 +60,37 @@ class Points(GeometryObj) :
 
         return pts_dict
 
+    def set_suppot(self, unique:str, restraints:list) :
+        Name = unique
+        Value = restraints
+        ItemType = 0
+        
+        self.sapModel.PointObj.SetRestraint(Name, Value, ItemType)
+        
+    def set_spring(self, unique:str , stiff:list, is_replaced:bool=True):
+        Name = unique
+        K = stiff
+        ItemType = 0
+        IsLocalCSys = False
+        Replace = is_replaced
+        
+        self.sapModel.PointObj.SetSpring(Name, K, ItemType, IsLocalCSys, Replace)
+        
+    def assign_load(self, unique:str, load_pattern:str, loads, 
+                    is_replaced:bool=True, is_gravity=False) :
+        Name = unique
+        LoadPat = load_pattern
+        Value = loads
+        Replace = is_replaced
+        CSys = 'Global'
+        ItemType = 0
+        
+        if is_gravity :
+            Value = [0, 0, -1*loads, 0, 0, 0]
+        
+        self.sapModel.PointObj.SetLoadForce(Name, LoadPat, Value, Replace, CSys, 
+                                            ItemType)
+
     
 class Frames(GeometryObj) :
     def __init__(self, etabs) :
@@ -95,6 +126,15 @@ class Frames(GeometryObj) :
     def delete(self, unique) :
         sapModel = self.sapModel
         sapModel.FrameObj.Delete(unique)
+    
+    def set_release(self) :
+        pass
+    
+    def set_rigidzone(self) :
+        pass
+    
+    def assign_load(self) :
+        pass
         
 class Areas(GeometryObj) :
     def __init__(self, etabs) :
