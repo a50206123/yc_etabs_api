@@ -30,6 +30,8 @@ class ETABS :
             sys.exit(-1)
         
         print("Successfully Loaded")
+
+        ## Setup ##
         self.success = True
         sapModel = etabs.SapModel
         
@@ -38,11 +40,30 @@ class ETABS :
         
         self.set_units()
         self.version = self.get_version()
-        
+        print(f'Set units (default tonf,m), and Get verion ({self.version})')
+
         #### Loading Other Objects
         self.Table = tb.Table(etabs)
+        
         self.Points = geo.Points(etabs)
         self.Frames = geo.Frames(etabs)
+    
+    def is_locked(self) -> bool :
+        return self.sapModel.GetModelIsLocked()
+    
+    def model_lock(self) :
+        if self.is_locked() : 
+            pass
+        else :
+            self.sapModel.SetModelIsLocked(True)
+            print('Model Locked')
+    
+    def model_unlock(self) :
+        if self.is_locked() : 
+            self.sapModel.SetModelIsLocked(False)
+            print('Model Unlocked')
+        else :
+            pass
     
     def get_version(self) :
         ver = self.sapModel.GetVersion()[0]
