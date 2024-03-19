@@ -32,3 +32,20 @@ mtype2num = {
 	'none' : 3,
 	'rebar' : 6
 }
+
+loadpattern2number = {
+    'Dead' : 1,
+    'Super Dead' : 2,
+    'Live' : 3,
+    'Reducible Live' : 4,
+    'Seismic' : 5,
+    'Wind' : 6,
+    'Snow' : 7,
+    'Other' : 8,
+    'EV' : 8,
+    'MASS' : 8,
+    'ROOF Live' : 11,
+    'Notional' : 12,
+    'Seismic (Drift)' : 37,
+    'QuakeDrift' : 61,
+}

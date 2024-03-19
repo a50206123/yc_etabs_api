@@ -6,6 +6,8 @@ class Table :
     def __init__(self, etabs):
         self.etabs = etabs
         self.sapModel = etabs.sapModel
+
+        print('To Load Table successfully!')
     #### READ TABLE    
     def read(self, key : str, col = None) :
         if not self.is_table_exist(key) :
@@ -39,7 +41,7 @@ class Table :
             print('Got all tables')
             return pd.DataFrame(data, columns= fields)
         else :
-            print('Got some tables')
+            print(f'Got some tables of which is {lambda x for x in fields}')
             get_col = []
             for i in range(n) :
                 if fields[i] in col :
@@ -49,6 +51,38 @@ class Table :
             
             return pd.DataFrame(some_data, columns=col)
     
+    def apply(self, key : str, data : pd.core.frame.DataFrame) :
+        fields = list(data.columns) # get fields you want to apply
+        data_1d = data.values.reshape(1, len(data.size)[0])
+        
+        self.sapModel.DatabaseTables.SetTableForEditingArray(key, 0, fields, 0, data_1d)
+
+        if self.sapModel.GetModelIsLocked():
+            self.sapModel.SetModelIsLocked(False) # unlock
+        
+        FillImportLog = True
+        NumFatalErrors = 0
+        NumErrorMsgs = 0
+        NumWarnMsgs = 0
+        NumInfoMsgs = 0
+        ImportLog = ''
+
+        [NumFatalErrors, NumErrorMsgs, NumWarnMsgs, NumInfoMsgs, ImportLog,
+            ret] = self.SapModel.DatabaseTables.ApplyEditedTables(FillImportLog, NumFatalErrors,
+                                                            NumErrorMsgs, NumWarnMsgs, NumInfoMsgs, ImportLog)
+        
+        results = {
+            'num_fatal_error' : NumFatalErrors,
+            'num_error_msg' : NumErrorMsgs,
+            'num_warning_msg' : NumWarnMsgs,
+            'num_info_msg' : NumInfoMsgs,
+            'log' : ImportLog,
+            'return' : ret
+        }
+        
+        print(f'Apply tables successfully. ({key})')
+        return results
+
     def get_all_tables(self) :
         return self.sapModel.DatabaseTables.GetAvailableTables()[1]
         
