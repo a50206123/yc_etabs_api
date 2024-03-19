@@ -73,7 +73,7 @@ class Table :
             if case == 0 :
                 col = ['UniqueName', 'X', 'Y', 'Z']
             elif case == 1 :
-                col = ['PointBay', 'X', 'Y', 'Z']
+                col = ['PointBay', 'Story', 'X', 'Y', 'Z']
             else :
                 pass
         
