@@ -1,4 +1,4 @@
-from yc_etabs_api import ETABS
+# from etabs import ETABS
 
 class Select() :
     def __init__(self, etabs) -> None:

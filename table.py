@@ -1,13 +1,13 @@
 import numpy as np
 import pandas as pd
-from yc_etabs_api import ETABS
+# from etabs import ETABS
 
 class Table :
     def __init__(self, etabs):
         self.etabs = etabs
         self.sapModel = etabs.sapModel
 
-        print('To Load Table successfully!')
+        # print('To Load Table successfully!')
     #### READ TABLE    
     def read(self, key : str, col = None) :
         if not self.is_table_exist(key) :
@@ -41,7 +41,7 @@ class Table :
             print('Got all tables')
             return pd.DataFrame(data, columns= fields)
         else :
-            print(f'Got some tables of which is {lambda x for x in fields}')
+            print(f'Got some tables of which is {[x for x in fields]}')
             get_col = []
             for i in range(n) :
                 if fields[i] in col :

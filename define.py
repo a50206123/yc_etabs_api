@@ -1,4 +1,4 @@
-from yc_etabs_api import ETABS
+# from etabs import ETABS
 import api_setting_numbers as nums
 
 class Define() :

@@ -16,7 +16,7 @@ class GeometryObj :
     
 class Points(GeometryObj) :
     def __init__(self, etabs):
-        super.__init__(self, etabs)
+        super().__init__(etabs)
 
     #----- Geometry -----#
     def add(self, coor : list) :
@@ -94,7 +94,7 @@ class Points(GeometryObj) :
     
 class Frames(GeometryObj) :
     def __init__(self, etabs) :
-        super.__init__(self, etabs)
+        super().__init__(etabs)
     
     #----- Geometry -----#
     def add(self, inputs:list, add_mode=0, sect_prop="Default", rotate=0) :
@@ -138,7 +138,7 @@ class Frames(GeometryObj) :
         
 class Areas(GeometryObj) :
     def __init__(self, etabs) :
-        super.__init__(self, etabs)
+        super().__init__(etabs)
     
     #----- Geometry -----#
     def add(self, inputs:list, add_mode=0, sect_prop="Default", rotate=0) :

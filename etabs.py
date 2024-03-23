@@ -4,7 +4,9 @@ import sys
 import comtypes.client
 
 from api_setting_numbers import *
+# import api_setting_numbers
 
+import file
 import geometry as geo
 import table as tb
 import analyze
@@ -39,6 +41,9 @@ class ETABS :
         
         self.etabs = etabs
         self.sapModel = sapModel
+
+        self.EDB_name = self.get_edb_name()
+        print(f'EDB ({self.EDB_name}) is LOADED!!')
         
         self.set_units()
         self.version = self.get_version()
@@ -46,16 +51,36 @@ class ETABS :
 
         #### Loading Other Objects
         self.Table = tb.Table(etabs)
+        mod =  'TABLE'
+        print(f'- {mod:10s} modulus is loaded')
         
+        self.File = file.File(etabs)
+        mod =  'FILE'
+        print(f'- {mod:10s} modulus is loaded')
+
         self.Points = geo.Points(etabs)
+        mod =  'POINTS'
+        print(f'- {mod:10s} modulus is loaded')
+
         self.Frames = geo.Frames(etabs)
+        mod =  'FRAMES'
+        print(f'- {mod:10s} modulus is loaded')
+
         self.Areas = geo.Areas(etabs)
+        mod =  'AREA'
+        print(f'- {mod:10s} modulus is loaded')
 
         self.Define = define.Define(etabs)
+        mod =  'DEFINE'
+        print(f'- {mod:10s} modulus is loaded')
 
         self.Select = select_.Select(etabs)
+        mod =  'SELECT'
+        print(f'- {mod:10s} modulus is loaded')
 
         self.Analyze = analyze.Analyze(etabs)
+        mod =  'ANALYZE'
+        print(f'- {mod:10s} modulus is loaded')
 
         self.DesignConcFrame = None
         self.DesignConcSlab = None
@@ -85,22 +110,18 @@ class ETABS :
     
     #### UNITS
     def set_units(self, units = ['tonf', 'm']) :
-        num = units2num[f'{units[0]}_{units[1]}'.lower()] 
+        num = units2num(f'{units[0]}_{units[1]}'.lower()) 
         self.sapModel.SetPresentUnits(num)
         
     def get_units(self) :
         n = self.sapModel.GetPresentUnits()
-        for units, num in units2num.items() :
-            if num == n :
-                return units.split('_')
+        return num2units(n)
     
-            
+    #### FILE
+    def get_edb_name(self, with_full_path = False) :
+        return self.sapModel.GetModelFilename(with_full_path)
+
+
 if __name__ == '__main__' :
     et = ETABS()
     
-    # ret = sap.PropMaterial.SetMaterial('CONC', 2)
-    # ret = sap.PropMaterial.SetMPIsotropic('CONC', 3600, 0.2, 0.0000055)
-    
-    # print(et.create_pt(0,0,10))
-    
-    # print(et.Point.get(1))
