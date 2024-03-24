@@ -12,6 +12,8 @@ import table as tb
 import analyze
 import define
 import select_
+import load_
+import design
 
 # Units Number Dictory
 
@@ -78,8 +80,16 @@ class ETABS :
         mod =  'SELECT'
         print(f'- {mod:10s} modulus is loaded')
 
+        self.LoadComb = load_.LoadComb(etabs)
+        mod =  'LOAD COMBINATION'
+        print(f'- {mod:10s} modulus is loaded')
+
         self.Analyze = analyze.Analyze(etabs)
         mod =  'ANALYZE'
+        print(f'- {mod:10s} modulus is loaded')
+
+        self.Design = design.Design(etabs)
+        mod =  'DesignConcreteFrame'
         print(f'- {mod:10s} modulus is loaded')
 
         self.DesignConcFrame = None

@@ -95,6 +95,7 @@ class Points(GeometryObj) :
 class Frames(GeometryObj) :
     def __init__(self, etabs) :
         super().__init__(etabs)
+        self.obj = self.sapModel.FrameObj
     
     #----- Geometry -----#
     def add(self, inputs:list, add_mode=0, sect_prop="Default", rotate=0) :
@@ -107,11 +108,11 @@ class Frames(GeometryObj) :
         if add_mode == 0 :
             XI, YI, ZI = inputs[0]
             XJ, YJ, ZJ = inputs[1]
-            unique, returnValue = sapModel.FrameObj.AddByCoor(XI, YI,
+            unique, returnValue = self.obj.AddByCoor(XI, YI,
                                     ZI, XJ, YJ, ZJ, Name, PropName, UserName, CSys) # API
         elif add_mode == 1:
             Point1, Point2 = inputs
-            unique, returnValue = sapModel.FrameObj.AddByPoint(Point1, 
+            unique, returnValue = self.obj.AddByPoint(Point1, 
 	                                Point2, Name, PropName, UserName) # API
         else :
             returnValue = 1
@@ -124,14 +125,13 @@ class Frames(GeometryObj) :
             return None
     
     def delete(self, unique) :
-        sapModel = self.sapModel
-        sapModel.FrameObj.Delete(unique)
+        self.obj.Delete(unique)
     
     def set_material(self, unique:str, mat:str) : # TEST OK
         Name = unique
         PropName = mat
 
-        ret = self.sapModel.FrameObj.SetMaterialOverwrite(Name, PropName)
+        ret = self.obj.SetMaterialOverwrite(Name, PropName)
 
         if ret == 0 :
             print(f'Frame {unique} change material {mat} successfully!!')
@@ -142,7 +142,7 @@ class Frames(GeometryObj) :
         Name = unique
         PropName = sect
 
-        ret = self.sapModel.FrameObj.SetSection(Name, PropName)
+        ret = self.obj.SetSection(Name, PropName)
 
         if ret == 0 :
             print(f'Frame {unique} change section {sect} successfully!!')
@@ -175,23 +175,55 @@ class Frames(GeometryObj) :
         StartValue = [0] * 6
         EndValue = [0] * 6
 
-        ret = self.sapModel.FrameObj.SetReleases(unique, ii, jj, StartValue, EndValue)[-1]
+        ret = self.obj.SetReleases(unique, ii, jj, StartValue, EndValue)[-1]
 
         if ret == 0 :
             print(f'Frame {unique} set release successfully!!')
         else :
             print(f'Frame {unique} do NOT set release !!!!!!!!')
     
+    def get_release(self, unique:str) : # TEST OK
+        Name = unique
+        II = [0] * 6
+        JJ = [0] * 6
+        StartValue = [0] * 6
+        EndValue = [0] * 6
+
+        return self.obj.GetReleases(Name, II, JJ, StartValue, EndValue)[0:2]
+    
     def set_rigidzone(self,unique:str, RZ:float) : # OK
         AutoOffset, Length1, Length2  = self.get_offset(unique)
         Name = unique
         
-        ret = self.sapModel.FrameObj.SetEndLengthOffset(Name, 
-                                                        AutoOffset, Length1, Length2, RZ)[-1]
+        ret = self.obj.SetEndLengthOffset(Name, AutoOffset, Length1, Length2, RZ)[-1]
         if ret == 0 :
             print(f'Frame {unique} set rigidzone successfully!!')
         else :
             print(f'Frame {unique} do NOT set rigidzone !!!!!!!!')
+    
+    def get_offset(self, unique:str) : # OK
+        Name = unique
+        AutoOffset = False
+        Length1 = 0.0
+        Length2 = 0.0
+        RZ = 0.0
+
+        ret = self.obj.\
+            GetEndLengthOffset(Name, AutoOffset, Length1, Length2, RZ)[0:3]
+        
+        return ret
+
+    def get_rigidzone(self, unique:str) : # OK
+        Name = unique
+        AutoOffset = False
+        Length1 = 0.0
+        Length2 = 0.0
+        RZ = 0.0
+
+        ret = self.obj.\
+            GetEndLengthOffset(Name, AutoOffset, Length1, Length2, RZ)[-2]
+        
+        return ret
     
     def set_modifier(self, unique:str, A:float = None,
                      V2:float = None, V3:float = None,
@@ -210,57 +242,58 @@ class Frames(GeometryObj) :
             else :
                 Value[i] = input[i]
 
-        ret = self.sapModel.FrameObj.SetModifiers(Name, Value)[-1]
+        ret = self.obj.SetModifiers(Name, Value)[-1]
 
         if ret == 0 :
             print(f'Frame {unique} set modifiers successfully!!')
         else :
             print(f'Frame {unique} do NOT set modifiers !!!!!!!!')
 
-    def get_section(self, unique:str) : # TEST OK
-        Name = unique
-        PropName = ''
-        SAuto = ''
-        return self.sapModel.FrameObj.GetSection(Name, PropName, SAuto)[0]
-
-    def get_release(self, unique:str) : # TEST OK
-        Name = unique
-        II = [0] * 6
-        JJ = [0] * 6
-        StartValue = [0] * 6
-        EndValue = [0] * 6
-
-        return self.sapModel.FrameObj.GetReleases(Name, II, JJ, StartValue, EndValue)[0:2]
-
     def get_modifier(self, unique:str) : # TEST OK
         Name = unique
         Value = []
 
-        return self.sapModel.FrameObj.GetModifiers(Name, Value)[0]
+        return self.obj.GetModifiers(Name, Value)[0]
 
-    def get_offset(self, unique:str) : # OK
+    def get_section(self, unique:str) : # TEST OK
         Name = unique
-        AutoOffset = False
-        Length1 = 0.0
-        Length2 = 0.0
-        RZ = 0.0
-
-        ret = self.sapModel.FrameObj.\
-            GetEndLengthOffset(Name, AutoOffset, Length1, Length2, RZ)[0:3]
+        PropName = ''
+        SAuto = ''
+        return self.obj.GetSection(Name, PropName, SAuto)[0]
+    
+    def get_name_list(self, by_unique = True) :
+        NumberNames = 0
+        MyName = []
+        ret = self.obj.GetNameList(NumberNames, MyName)
+        # print(ret)
+        print(f'Total Number of Frame = {ret[0]}')
         
-        return ret
+        if by_unique :
+            return ret[1]
+        else :
+            name_list = []
 
-    def get_rigidzone(self, unique:str) : # OK
+            for label in ret[1] :
+                name_list.append(self.unique2label(label))
+            return name_list
+    
+    def unique2label(self, unique:str) :
         Name = unique
-        AutoOffset = False
-        Length1 = 0.0
-        Length2 = 0.0
-        RZ = 0.0
+        Label = ''
+        Story = ''
 
-        ret = self.sapModel.FrameObj.\
-            GetEndLengthOffset(Name, AutoOffset, Length1, Length2, RZ)[-2]
-        
-        return ret
+        ret = self.obj.GetLabelFromName(Name, Label, Story)
+        # print(ret)
+        return ret[0:2]
+    
+    def label2unique(self, story:str, label:str) :
+        Name = ''
+        Label = label
+        Story = story
+
+        ret = self.obj.GetNameFromLabel(Label, Story, Name)
+        # print(ret)
+        return ret[0]
 
     def assign_load(self) :
         pass
@@ -268,11 +301,10 @@ class Frames(GeometryObj) :
 class Areas(GeometryObj) :
     def __init__(self, etabs) :
         super().__init__(etabs)
+        self.obj = self.sapModel.AreaObj
     
     #----- Geometry -----#
     def add(self, inputs:list, add_mode=0, sect_prop="Default", rotate=0) :
-        sapModel = self.sapModel
-
         NumberPoints = len(inputs)
         Name = []
         PropName = sect_prop
@@ -287,11 +319,11 @@ class Areas(GeometryObj) :
                 Y.append(coor[1])
                 Z.append(coor[2])
 
-            unique, returnValue = sapModel.AreaObj.AddByCoord(NumberPoints, 
+            unique, returnValue = self.obj.AddByCoord(NumberPoints, 
                                         	X, Y, Z, Name, PropName, UserName, CSys) # API
         elif add_mode == 1:
             Point = inputs
-            unique, returnValue = sapModel.AreaObj.AddByPoint(NumberPoints, 
+            unique, returnValue = self.obj.AddByPoint(NumberPoints, 
                                         	Point, Name, PropName, UserName) # API
         else :
             returnValue = 1
@@ -304,8 +336,7 @@ class Areas(GeometryObj) :
             return None
     
     def delete(self, unique) :
-        sapModel = self.sapModel
-        sapModel.AreaObj.Delete(unique)
+        self.obj.Delete(unique)
     
 if __name__ == '__main__' :
     from yc_etabs_api.etabs import ETABS
@@ -328,6 +359,10 @@ if __name__ == '__main__' :
     # print(etabs.Frames.get_modifier('4040'))
 
     #### TEST rigidzone
-    print(etabs.Frames.get_rigidzone('3496'))
-    print(etabs.Frames.get_rigidzone('4040'))
-    print(etabs.Frames.get_offset('4040'))
+    # print(etabs.Frames.get_rigidzone('3496'))
+    # print(etabs.Frames.get_rigidzone('4040'))
+    # print(etabs.Frames.get_offset('4040'))
+
+    # print(etabs.Frames.get_name_list(by_unique=False))
+    print(etabs.Frames.unique2label('3494'))
+    print(etabs.Frames.label2unique('PRF', 'B96'))
