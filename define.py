@@ -1,5 +1,5 @@
 # from etabs import ETABS
-import api_setting_numbers as nums
+import setting as nums
 import math
 
 class Define() :
@@ -68,7 +68,7 @@ class Material() :
 
     def set_conc_para(self, name, fc, conc_code = '113') :
         if self.get(name) != 0 :
-            self.add(name, nums.mtype2num('concrete'))
+            self.add(name, 'concrete')
 
         Name = name
         Fc = fc
@@ -118,7 +118,7 @@ class FrameSect :
         self.sapModel = etabs.sapModel
         self.obj = self.sapModel.PropFrame
 
-    def add(self, name:str, shape:str, geometry:dict, mat:str) :
+    def add(self, name:str, shape:str, geometry:list, mat:str) :
         ####
         # shape = rect --> geometry = [H, B]
         ####

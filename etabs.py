@@ -1,10 +1,16 @@
 from ntpath import join
+
 import os
 import sys
+cdr = os.path.abspath(__file__).split('\\')
+del cdr[-1]
+sys.path.append('\\'.join(cdr))
+
 import comtypes.client
 
-from api_setting_numbers import *
+from setting import *
 # import api_setting_numbers
+# from yc_etabs_api.setting import *
 
 import file
 import geometry as geo
