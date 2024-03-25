@@ -1,4 +1,3 @@
-# from etabs import ETABS
 
 class Analyze() :
     def __init__(self, etabs) -> None:
