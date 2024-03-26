@@ -1,9 +1,37 @@
-def units2num(unit:str) -> int :  ## NG
-    idx = units_num
+def units2num(unit:str) -> int : 
+    idx = {
+        'kn_mm' : 5,
+        'kn_m' : 6,
+        'kgf_mm' : 7,
+        'kgf_m' : 8,
+        'n_mm' : 9,
+        'n_m' : 10,
+        'tonf_mm' : 11,
+        'tonf_m' : 12,
+        'kn_cm' : 13,
+        'kgf_cm' : 14,
+        'n_cm' : 15,
+        'tonf_cm' : 16,
+    }
+    
     return idx[unit]
 
-def num2units(num:int) -> list :  ## NG
-    idx = units_num
+def num2units(num:int) -> list :  
+    idx = {
+        'kn_mm' : 5,
+        'kn_m' : 6,
+        'kgf_mm' : 7,
+        'kgf_m' : 8,
+        'n_mm' : 9,
+        'n_m' : 10,
+        'tonf_mm' : 11,
+        'tonf_m' : 12,
+        'kn_cm' : 13,
+        'kgf_cm' : 14,
+        'n_cm' : 15,
+        'tonf_cm' : 16,
+    }
+    
     return reverse_index(idx, num).split('_')
 
 def force2num(force_unit:str) -> int :
@@ -56,21 +84,3 @@ def reverse_index(data, value) :
         if j == value :
             return i
     return None
-
-def units2num(units:str) -> int:
-    units_num = {
-        'kn_mm' : 5,
-        'kn_m' : 6,
-        'kgf_mm' : 7,
-        'kgf_m' : 8,
-        'n_mm' : 9,
-        'n_m' : 10,
-        'tonf_mm' : 11,
-        'tonf_m' : 12,
-        'kn_cm' : 13,
-        'kgf_cm' : 14,
-        'n_cm' : 15,
-        'tonf_cm' : 16,
-        
-    }
-    return units_num[units]
