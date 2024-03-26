@@ -1,0 +1,5 @@
+python
+C:\Users\USER\AppData\Local\Programs\Python\Python311\Lib\site-packages
+
+anaconda
+C:\ProgramData\anaconda3\lib\site-packages

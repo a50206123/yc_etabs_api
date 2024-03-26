@@ -7,6 +7,8 @@ class Table :
         self.etabs = etabs
         self.sapModel = etabs.sapModel
 
+        self.obj = self.sapModel.DatabaseTables
+
         # print('To Load Table successfully!')
     #### READ TABLE    
     def read(self, key : str, col = None) :
@@ -21,7 +23,7 @@ class Table :
         NumberRecords = 0
         TableData = []
         ## From API
-        table = self.sapModel.DatabaseTables.GetTableForDisplayArray(\
+        table = self.obj.GetTableForDisplayArray(\
             TableKey, FieldKeyList, GroupName, TableVersion,\
             FieldsKeysIncluded, NumberRecords, TableData)
             
@@ -55,10 +57,10 @@ class Table :
         fields = list(data.columns) # get fields you want to apply
         data_1d = data.values.reshape(1, len(data.size)[0])
         
-        self.sapModel.DatabaseTables.SetTableForEditingArray(key, 0, fields, 0, data_1d)
+        self.obj.SetTableForEditingArray(key, 0, fields, 0, data_1d)
 
-        if self.sapModel.GetModelIsLocked():
-            self.sapModel.SetModelIsLocked(False) # unlock
+        if self.etabs.is_locked():
+            self.etabs.model_unlock() # unlock
         
         FillImportLog = True
         NumFatalErrors = 0
@@ -68,8 +70,9 @@ class Table :
         ImportLog = ''
 
         [NumFatalErrors, NumErrorMsgs, NumWarnMsgs, NumInfoMsgs, ImportLog,
-            ret] = self.SapModel.DatabaseTables.ApplyEditedTables(FillImportLog, NumFatalErrors,
-                                                            NumErrorMsgs, NumWarnMsgs, NumInfoMsgs, ImportLog)
+            ret] = \
+                self.obj.ApplyEditedTables(FillImportLog, NumFatalErrors, 
+                                           NumErrorMsgs, NumWarnMsgs, NumInfoMsgs, ImportLog)
         
         results = {
             'num_fatal_error' : NumFatalErrors,
@@ -84,7 +87,7 @@ class Table :
         return results
 
     def get_all_tables(self) :
-        return self.sapModel.DatabaseTables.GetAvailableTables()[1]
+        return self.obj.GetAvailableTables()[1]
         
     def is_table_exist(self, key : str) :
         all_tables = self.get_all_tables()
@@ -153,6 +156,7 @@ class Table :
         return self.read(key, col)
 
 if __name__ == '__main__' :
+    from etabs import ETABS
     
     et = ETABS()
     tb = Table(et)

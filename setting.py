@@ -1,8 +1,8 @@
-def units2num(unit:str) -> int : 
+def units2num(unit:str) -> int :  ## NG
     idx = units_num
     return idx[unit]
 
-def num2units(num:int) -> list :
+def num2units(num:int) -> list :  ## NG
     idx = units_num
     return reverse_index(idx, num).split('_')
 

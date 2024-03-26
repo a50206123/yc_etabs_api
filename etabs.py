@@ -95,12 +95,9 @@ class ETABS :
         print(f'- {mod:10s} modulus is loaded')
 
         self.Design = design.Design(etabs)
-        mod =  'DesignConcreteFrame'
+        mod =  'Design'
         print(f'- {mod:10s} modulus is loaded')
 
-        self.DesignConcFrame = None
-        self.DesignConcSlab = None
-    
     #### LOCK
     def is_locked(self) -> bool :
         return self.sapModel.GetModelIsLocked()

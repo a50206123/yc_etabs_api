@@ -1,6 +1,9 @@
 class Design :
     def __init__(self, etabs) -> None:
         self.ConcFrame = ConcFrame(etabs)
+        self.ConcSlab = None
+        self.Steel = None    
+
 
 class ConcFrame :
     def __init__(self, etabs) -> None:

@@ -13,8 +13,11 @@ class GeometryObj :
     
     def modify(self) :
         pass
+
+    def delete(self) :
+        pass
     
-class Points(GeometryObj) :
+class Points(GeometryObj) : ## NEED TO UPDATES
     def __init__(self, etabs):
         super().__init__(etabs)
 

@@ -20,13 +20,6 @@ class Define() :
 
         self.MassSource = None
 
-    class LoadCase() :
-        def __init__(self, etabs) -> None:
-            self.etabs = etabs
-            self.sapModel = etabs.sapModel
-
-            self.cases = etabs.sapModel.LoadCases.GetNameList(0, [])[1]
-
 class Material() :
     def __init__(self, etabs) -> None:
         self.etabs = etabs
