@@ -86,9 +86,9 @@ class ETABS :
         mod =  'SELECT'
         print(f'- {mod:10s} modulus is loaded')
 
-        self.LoadComb = load_.LoadComb(etabs)
-        mod =  'LOAD COMBINATION'
-        print(f'- {mod:10s} modulus is loaded')
+        # self.LoadComb = load_.LoadComb(etabs)
+        # mod =  'LOAD COMBINATION'
+        # print(f'- {mod:10s} modulus is loaded')
 
         self.Analyze = analyze.Analyze(etabs)
         mod =  'ANALYZE'

@@ -1,6 +1,7 @@
 # from etabs import ETABS
 import setting as nums
 import math
+import load_
 
 class Define() :
     def __init__(self, etabs) -> None:
@@ -16,9 +17,9 @@ class Define() :
         self.AreaSpring = None
 
         self.LoadPattern = None
-        self.LoadComb = None
+        self.LoadComb = load_.LoadComb(etabs)
 
-        self.MassSource = None
+        self.MassSource = MassSource(etabs)
 
 class Material() :
     def __init__(self, etabs) -> None:
@@ -211,6 +212,64 @@ class FrameSect :
         else :
             print(f'FrameSection {name} do NOT set parameters of concrete column !!!!!!!!')
 
+class MassSource() :
+    def __init__(self, etabs) -> None:
+        self.etabs = etabs
+        self.sapModel = etabs.sapModel
+        self.obj = self.sapModel.PropMaterial
+
+    def set(self, mass_from_elements:bool = False, mass_from_added_mass:bool = False,
+            mass_from_loads:bool = True, load_name_factor:dict = {'MASS1': 1.0}) : # OK
+        #### mass_from
+        ####    = 1 -> From element self mass and additional masses
+        ####    = 2 -> From load
+        ####    = 3 -> 1st + 2nd
+        #### load_name_factor = {'load_name' : load_factor}
+
+        IncludeElements = mass_from_elements
+        IncludeAddedMass =  mass_from_added_mass
+        IncludeLoads =  mass_from_loads
+        NumberLoads = len(load_name_factor)
+        LoadPat = []
+        sf = []
+
+        for key, val in load_name_factor.items() :
+            LoadPat.append(key)
+            sf.append(val)
+        
+
+        ret = self.obj.SetMassSource_1(IncludeElements, IncludeAddedMass, IncludeLoads, 
+                                       NumberLoads, LoadPat, sf)
+        # print(ret)
+
+        if ret[-1] == 0 :
+            print(f'MassSource as following set successfully !!')
+            for key, val in load_name_factor.items() :
+                print(f'    {key} = {val}')
+        else :
+            print(f'MassSource do NOT set !!!!!!!!')
+
+
+    def get(self) :
+        IncludeElements = 0
+        IncludeAddedMass =  0
+        IncludeLoads =  0
+        NumberLoads = 0
+        LoadPat = []
+        sf = []
+
+        ret = self.obj.GetMassSource_1(IncludeElements, IncludeAddedMass, IncludeLoads, 
+                                       NumberLoads, LoadPat, sf)
+        
+        load_name_factor = {}
+
+        for i in range(ret[3]) :
+            load_name_factor[ret[-3][i]] = ret[-2][i]
+
+        # print(ret)
+
+        return load_name_factor
+
 if __name__ == '__main__' :
     from yc_etabs_api.etabs import ETABS
 
@@ -222,8 +281,12 @@ if __name__ == '__main__' :
     
     # etabs.Define.FrameSect.get('TestBeam', 'rect')
     # etabs.Define.FrameSect.get('TestBeam111', 'rect')
-    etabs.Define.FrameSect.add('TestBeam', 'rect', [.70,.40], 'BEAM245')
-    etabs.Define.FrameSect.add('TestCol', 'rect', [1.00,1.10], 'COL280')
-    etabs.Define.FrameSect.set_beam_para('TestBeam', 'SD490', 'SD420', [.08,.08])
-    etabs.Define.FrameSect.set_col_para('TestCol', 'SD490', 'SD420', .04)
+    # etabs.Define.FrameSect.add('TestBeam', 'rect', [.70,.40], 'BEAM245')
+    # etabs.Define.FrameSect.add('TestCol', 'rect', [1.00,1.10], 'COL280')
+    # etabs.Define.FrameSect.set_beam_para('TestBeam', 'SD490', 'SD420', [.08,.08])
+    # etabs.Define.FrameSect.set_col_para('TestCol', 'SD490', 'SD420', .04)
+    
+    etabs.Define.MassSource.set(load_name_factor={'MASS2': 1})
+    print(etabs.Define.MassSource.get())
+    
     pass

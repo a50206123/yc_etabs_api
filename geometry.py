@@ -20,56 +20,80 @@ class GeometryObj :
 class Points(GeometryObj) : ## NEED TO UPDATES
     def __init__(self, etabs):
         super().__init__(etabs)
+        self.obj = self.sapModel.PointObj
 
     #----- Geometry -----#
-    def add(self, coor : list) :
+    def add(self, coor : list) : # OK
         # Input Info
         # x, y, z are global coordinates
         x, y, z = coor
-        sapModel = self.sapModel
-        unique, returnValue = sapModel.PointObj.AddCartesian(x, y, z)
-        return unique
+
+        unique, ret = self.obj.AddCartesian(x, y, z)
+
+        if ret == 0 :
+            print(f'Point {unique}({x},{y},{z}) is added successfully.')
+            return unique
+        else :
+            print(f'Point ({x},{y},{z}) is Not added successfully.')
+            return None
     
-    def modify(self, unique : int) :
-        pass
+    def delete(self, unique : str) :
+        unique = str(unique)
+        ret = self.obj.DeleteSpecialPoint(unique)
+        # print(ret)
+
+        if ret == 0 :
+            print(f'Point {unique} is deleted successfully.')
+        else :
+            print(f'Point {unique} is Not deleted successfully.')
     
-    def delete(self, unique : int) :
-        self.sapModel.PointObj.DeleteSpecialPoint(unique)
-    
-    def selected(self):
-        return self.sapModel.PointObj.GetAllPoints(0,[],[],[],[])
-    
-    def get_all(self, case=0) :
-        pts = self.Table.get_points(case = case)
-
-        pts_dict = {}
-        if case == 0 :
-            unique = pts['UniqueName']
-            X = pts['X']
-            Y = pts['Y']
-            Z = pts['Z']
-
-            for name, x,y,z in unique,X,Y,Z :
-                pts_dict[name] = [x, y, z]
-        elif case == 1 :
-            bays = pts['PointBay']
-            stories = pts['Story']
-            X = pts['X']
-            Y = pts['Y']
-            Z = pts['Z']
-
-            for bay, story, x, y, z in bays, stories, X, Y, Z :
-                pts[story+bay] = [x, y, z]
-
-        return pts_dict
-
-    def set_suppot(self, unique:str, restraints:list) :
-        Name = unique
-        Value = restraints
-        ItemType = 0
+    def get_name_list(self, by_unique = True) :
+        NumberNames = 0
+        MyName = []
+        ret = self.obj.GetNameList(NumberNames, MyName)
+        # print(ret)
+        print(f'Total Number of Points = {ret[0]}')
         
-        self.sapModel.PointObj.SetRestraint(Name, Value, ItemType)
+        if by_unique :
+            return ret[1]
+        else :
+            name_list = []
+
+            for label in ret[1] :
+                name_list.append(self.unique2label(label))
+            return name_list
+
+    def set_suppot(self, unique:str, UX = False, UY = False, UZ = False,
+                   RX = False, RY = False, RZ = False, quick:str = None) :
         
+        if quick == 'pin' :
+            UX = True
+            UY = True
+            UZ = True
+        elif quick == 'fix' :
+            UX = True
+            UY = True
+            UZ = True
+            RX = True
+            RY = True
+            RZ = True           
+        elif quick == 'roller' :
+            UZ = True
+        elif quick == 'free' :
+            pass
+
+        Name = str(unique)
+        Value = [UX, UY, UZ, RX, RY, RZ]
+        
+        ret = self.obj.SetRestraint(Name, Value)
+        # print(ret)
+        if ret[-1] == 0 :
+            print(f'Point {unique} set support successfully.')
+            return unique
+        else :
+            print(f'Point {unique} do Not set successfully.')
+            return None
+
     def set_spring(self, unique:str , stiff:list, is_replaced:bool=True):
         Name = unique
         K = stiff
@@ -94,6 +118,26 @@ class Points(GeometryObj) : ## NEED TO UPDATES
         self.sapModel.PointObj.SetLoadForce(Name, LoadPat, Value, Replace, CSys, 
                                             ItemType)
 
+    def assign_load(self) :
+        pass
+
+    def unique2label(self, unique:str) : # OK
+        Name = str(unique)
+        Label = ''
+        Story = ''
+
+        ret = self.obj.GetLabelFromName(Name, Label, Story)
+        # print(ret)
+        return ret[0:2]
+    
+    def label2unique(self, story:str, label:str) : # OK
+        Name = ''
+        Label = str(label)
+        Story = story
+
+        ret = self.obj.GetNameFromLabel(Label, Story, Name)
+        # print(ret)
+        return ret[0]
     
 class Frames(GeometryObj) :
     def __init__(self, etabs) :
@@ -121,10 +165,10 @@ class Frames(GeometryObj) :
             returnValue = 1
         
         if returnValue == 0 :
-            print(f'Frame {unique} added successfully.')
+            print(f'Frame {unique} is added successfully.')
             return unique
         else :
-            print('No Frame Added.')
+            print('No Frame is added.')
             return None
     
     def delete(self, unique) :
@@ -281,7 +325,7 @@ class Frames(GeometryObj) :
             return name_list
     
     def unique2label(self, unique:str) :
-        Name = unique
+        Name = str(unique)
         Label = ''
         Story = ''
 
@@ -346,6 +390,13 @@ if __name__ == '__main__' :
 
     etabs = ETABS()
 
+    # uniq = etabs.Points.add([1,1,52.1])
+    # etabs.Points.delete('728')
+    # print(etabs.Points.unique2label(1670))
+    # print(etabs.Points.label2unique('PRF', 81))
+    # print(etabs.Points.get_name_list(by_unique=False))
+    # etabs.Points.set_suppot(1670, quick='free')
+
     #### TEST material
     # etabs.Frames.set_material("4040", "BEAM560") # OK
 
@@ -367,5 +418,5 @@ if __name__ == '__main__' :
     # print(etabs.Frames.get_offset('4040'))
 
     # print(etabs.Frames.get_name_list(by_unique=False))
-    print(etabs.Frames.unique2label('3494'))
-    print(etabs.Frames.label2unique('PRF', 'B96'))
+    # print(etabs.Frames.unique2label('3494'))
+    # print(etabs.Frames.label2unique('PRF', 'B96'))
