@@ -18,8 +18,8 @@ import table as tb
 import analyze
 import define
 import select_
-import load_
 import design
+import results
 
 # Units Number Dictory
 
@@ -51,6 +51,7 @@ class ETABS :
         self.sapModel = sapModel
 
         self.EDB_name = self.get_edb_name()
+        self.EDB_path = self.get_edb_path()
         print(f'EDB ({self.EDB_name}) is LOADED!!')
         
         self.set_units()
@@ -94,6 +95,10 @@ class ETABS :
         mod =  'ANALYZE'
         print(f'- {mod:10s} modulus is loaded')
 
+        self.Results = results.Results(etabs)
+        mod =  'RESULT'
+        print(f'- {mod:10s} modulus is loaded')
+
         self.Design = design.Design(etabs)
         mod =  'Design'
         print(f'- {mod:10s} modulus is loaded')
@@ -133,8 +138,13 @@ class ETABS :
     #### FILE
     def get_edb_name(self, with_full_path = False) :
         return self.sapModel.GetModelFilename(with_full_path)
-
+    
+    def get_edb_path(self) :
+        ret = self.sapModel.GetModelFilename(True).split('\\')
+        del ret[-1]
+        return '\\'.join(ret)
 
 if __name__ == '__main__' :
     et = ETABS()
     
+    print(et.get_edb_path())

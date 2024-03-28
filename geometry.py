@@ -241,6 +241,8 @@ class Frames(GeometryObj) :
     def set_rigidzone(self,unique:str, RZ:float) : # OK
         AutoOffset, Length1, Length2  = self.get_offset(unique)
         Name = unique
+
+        AutoOffset = True
         
         ret = self.obj.SetEndLengthOffset(Name, AutoOffset, Length1, Length2, RZ)[-1]
         if ret == 0 :
