@@ -143,8 +143,15 @@ class ETABS :
         ret = self.sapModel.GetModelFilename(True).split('\\')
         del ret[-1]
         return '\\'.join(ret)
+    
+    #### REFRESH
+    def refresh(self) :
+        obj = self.sapModel.View
+        obj.RefreshView()
 
 if __name__ == '__main__' :
     et = ETABS()
     
-    print(et.get_edb_path())
+    # print(et.get_edb_path())
+
+    et.refresh()
