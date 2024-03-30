@@ -84,3 +84,20 @@ def reverse_index(data, value) :
         if j == value :
             return i
     return None
+
+def load_dir2num(dir:str) -> int :
+    """load_dir
+
+    Args:
+        dir (str): 
+        lowercase means local
+        uppercase means global
+        proj means projected
+        g means Gravity
+
+    Returns:
+        int: _description_
+    """
+    all_dir = ['x', 'y', 'z', 'X', 'Y', 'Z', 'projX', 'projY', 'projZ', 'g', 'projg']
+    
+    return all_dir.index(dir) + 1

@@ -1,4 +1,5 @@
 import table as tb
+from setting import *
 
 class GeometryObj :
     def __init__(self, etabs) :
@@ -344,8 +345,22 @@ class Frames(GeometryObj) :
         # print(ret)
         return ret[0]
 
-    def assign_load(self) :
-        pass
+    def assign_load(self, unique:str, load_pattern:str, loading:float, is_force:bool = True, dir = 'g', is_replace = False) :
+        Name = unique
+        LoadPat = load_pattern
+        MyType = 1 if is_force else 2
+        Dir = load_dir2num(dir)
+        Dist1, Dist2 = (0, 0)
+        Val1, Val2 = (loading, loading)
+        Replace = is_replace
+        ret = self.obj.SetLoadDistributed (Name, LoadPat, MyType, Dir, 
+                            Dist1, Dist2, Val1, Val2, Replace = Replace)
+        
+        if ret == 0 :
+            print(f'Frame {unique} assign {load_pattern} = {loading:.3f} successfully!!')
+        else :
+            print(f'Frame {unique} do NOT assign load !!!!!!!!')
+        
         
 class Areas(GeometryObj) :
     def __init__(self, etabs) :
