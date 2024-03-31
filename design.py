@@ -60,10 +60,47 @@ class ConcFrame :
         elif '318-08' in code :
             ret = self.obj.ACI318_08_IBC2009.SetOverwrite(Name, Item, Value)
 
+        if ret == 0 :
+            print(f'Frame {name} sets overwrite successfully ({quick})')
+        else :
+            print(f'Frame {name} does not set overwrite successfully ')
+
+    def get_overwrite(self, name:str, item:int, quick:str = None) :
+        code = self.get_code()
+
+        Name = name
+        Value = ''
+        if quick is None :
+            Item = item
+
+        elif quick == 'frame type' :
+            Item = 1
+             
+        elif quick == 'live reduction' :
+            Item = 2
+
+        if '318-14' in code :
+            ret = self.obj.ACI318_14.GetOverwrite(Name, Item)
+        elif '318-08' in code :
+            ret = self.obj.ACI318_08_IBC2009.GetOverwrite(Name, Item)
+
+        # print(ret)
+
+        val = ret[0]
+
+        if Item == 1 :
+            if val == 1 :
+                return 'sway'
+            elif val == 4 :
+                return 'nonsway'
+
+
 if __name__ == "__main__" :
     from yc_etabs_api.etabs import ETABS
 
     etabs = ETABS()
 
-    etabs.Design.ConcFrame.set_code('ACI318-14')
-    print(etabs.Design.ConcFrame.get_code())
+    # etabs.Design.ConcFrame.set_code('ACI318-14')
+    # print(etabs.Design.ConcFrame.get_code())
+
+    etabs.Design.ConcFrame.get_overwrite('4040', 0, quick='frame type')

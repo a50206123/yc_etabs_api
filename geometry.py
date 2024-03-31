@@ -174,6 +174,10 @@ class Frames(GeometryObj) :
     
     def delete(self, unique) :
         self.obj.Delete(unique)
+
+    def set_selected(self, unique) :
+        self.obj.SetSelected(unique, True)
+        print(f'Frame {unique} is selected now')
     
     def set_material(self, unique:str, mat:str) : # TEST OK
         Name = unique
@@ -245,11 +249,11 @@ class Frames(GeometryObj) :
 
         AutoOffset = True
         
-        ret = self.obj.SetEndLengthOffset(Name, AutoOffset, Length1, Length2, RZ)[-1]
+        ret = self.obj.SetEndLengthOffset(Name, AutoOffset, Length1, Length2, RZ)
         if ret == 0 :
-            print(f'Frame {unique} set rigidzone successfully!!')
+            print(f'Frame {unique} sets rigidzone successfully!!')
         else :
-            print(f'Frame {unique} do NOT set rigidzone !!!!!!!!')
+            print(f'Frame {unique} does NOT set rigidzone !!!!!!!!')
     
     def get_offset(self, unique:str) : # OK
         Name = unique
@@ -430,7 +434,9 @@ if __name__ == '__main__' :
     # print(etabs.Frames.get_modifier('4040'))
 
     #### TEST rigidzone
-    # print(etabs.Frames.get_rigidzone('3496'))
+    # print(etabs.Frames.set_rigidzone('3496', .5))
+    etabs.sapModel.FrameObj.SetEndLengthOffset('3496', True, 0,0,1)
+    print(etabs.Frames.get_rigidzone('3496'))
     # print(etabs.Frames.get_rigidzone('4040'))
     # print(etabs.Frames.get_offset('4040'))
 
@@ -438,4 +444,14 @@ if __name__ == '__main__' :
     # print(etabs.Frames.unique2label('3494'))
     # print(etabs.Frames.label2unique('PRF', 'B96'))
 
-    etabs.Frames.assign_load('4040', "DEAD", 1.1)
+    # etabs.Frames.assign_load('4040', "DEAD", 1.1)
+    
+    # frames = etabs.Frames.get_name_list(by_unique = False)
+    # print(frames[0][0][0] == 'B')
+    # etabs.Frames.set_modifier(frames[0][0], T = 0.1)
+
+    # print(etabs.sapModel.FrameObj.SetEndLengthOffset('4040', True, 0, 0, 0))
+
+    # print(etabs.Frames.get_modifier('4040'))
+
+    # print(etabs.sapModel.FrameObj.GetEndLengthOffset('4040'))
