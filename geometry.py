@@ -350,16 +350,16 @@ class Frames(GeometryObj) :
         LoadPat = load_pattern
         MyType = 1 if is_force else 2
         Dir = load_dir2num(dir)
-        Dist1, Dist2 = (0, 0)
+        Dist1, Dist2 = (0, 1)
         Val1, Val2 = (loading, loading)
         Replace = is_replace
         ret = self.obj.SetLoadDistributed (Name, LoadPat, MyType, Dir, 
                             Dist1, Dist2, Val1, Val2, Replace = Replace)
         
         if ret == 0 :
-            print(f'Frame {unique} assign {load_pattern} = {loading:.3f} successfully!!')
+            print(f'Frame {unique} assigns {load_pattern} = {loading:.3f} successfully!!')
         else :
-            print(f'Frame {unique} do NOT assign load !!!!!!!!')
+            print(f'Frame {unique} does NOT assign load !!!!!!!!')
         
         
 class Areas(GeometryObj) :
@@ -437,3 +437,5 @@ if __name__ == '__main__' :
     # print(etabs.Frames.get_name_list(by_unique=False))
     # print(etabs.Frames.unique2label('3494'))
     # print(etabs.Frames.label2unique('PRF', 'B96'))
+
+    etabs.Frames.assign_load('4040', "DEAD", 1.1)
