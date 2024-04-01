@@ -56,9 +56,13 @@ class Material() :
 
         ret = self.obj.GetMaterial(Name, MatType, Color,
                                                      Notes, GUID)
-        # print(ret
+        # print(ret)
         
-        return ret[-1]
+        return {
+            'name' : name,
+            'mat_type' : ret[0],
+            'color' : ret[1]
+        }
 
     def set_conc_para(self, name, fc, conc_code = '113') :
         if self.get(name) != 0 :
@@ -275,7 +279,7 @@ if __name__ == '__main__' :
 
     etabs = ETABS()
 
-    # print(etabs.Define.Material.get_material('123'))
+    print(etabs.Define.Material.get('BEAM350'))
     # etabs.Define.Material.add('test1', 'concrete')
     # etabs.Define.Material.set_conc_para('test1', 280, conc_code= '113')
     
@@ -286,7 +290,7 @@ if __name__ == '__main__' :
     # etabs.Define.FrameSect.set_beam_para('TestBeam', 'SD490', 'SD420', [.08,.08])
     # etabs.Define.FrameSect.set_col_para('TestCol', 'SD490', 'SD420', .04)
     
-    etabs.Define.MassSource.set(load_name_factor={'MASS2': 1})
-    print(etabs.Define.MassSource.get())
+    # etabs.Define.MassSource.set(load_name_factor={'MASS2': 1})
+    # print(etabs.Define.MassSource.get())
     
     pass

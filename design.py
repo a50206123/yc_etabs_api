@@ -1,3 +1,5 @@
+from geometry import Frames
+
 class Design :
     def __init__(self, etabs) -> None:
         self.ConcFrame = ConcFrame(etabs)
@@ -10,6 +12,7 @@ class ConcFrame :
         self.etabs = etabs
         self.sapModel = etabs.SapModel
         self.obj = etabs.sapModel.DesignConcrete
+        self.Frame = Frames(self.etabs)
 
     def set_code(self, code = 'ACI318-14') :
         if code == 'ACI318-14' :
@@ -59,11 +62,12 @@ class ConcFrame :
             ret = self.obj.ACI318_14.SetOverwrite(Name, Item, Value)
         elif '318-08' in code :
             ret = self.obj.ACI318_08_IBC2009.SetOverwrite(Name, Item, Value)
-
+        
+        label, story = self.Frame.unique2label(name)
         if ret == 0 :
-            print(f'Frame {name} sets overwrite successfully ({quick})')
+            print(f'Frame {name} ({story} {label}) sets overwrite successfully ({quick})')
         else :
-            print(f'Frame {name} does not set overwrite successfully ')
+            print(f'Frame {name} ({story} {label}) does not set overwrite successfully ')
 
     def get_overwrite(self, name:str, item:int, quick:str = None) :
         code = self.get_code()
@@ -104,3 +108,5 @@ if __name__ == "__main__" :
     # print(etabs.Design.ConcFrame.get_code())
 
     etabs.Design.ConcFrame.get_overwrite('4040', 0, quick='frame type')
+
+    

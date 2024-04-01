@@ -197,9 +197,9 @@ class Frames(GeometryObj) :
         ret = self.obj.SetSection(Name, PropName)
 
         if ret == 0 :
-            print(f'Frame {unique} change section {sect} successfully!!')
+            print(f'Frame {unique} changes section {sect} successfully!!')
         else :
-            print(f'Frame {unique} do NOT change section {sect} !!!!!!!!')
+            print(f'Frame {unique} does NOT change section {sect} !!!!!!!!')
 
     def set_release(self, unique:str, 
                     P:bool = False, T:bool = False,
