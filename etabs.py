@@ -103,7 +103,7 @@ class ETABS :
 
 
         
-        print_log(f'\n{"#"*10}  "{self.EDB_name}" is Connected!  {"#"*10}')
+        print_log(f'\n{"#"*10}  "{self.EDB_name}" is Connected!  {"#"*10}\n\n')
 
 
 

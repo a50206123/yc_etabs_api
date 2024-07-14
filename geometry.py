@@ -66,7 +66,7 @@ class Points(GeometryObj) : ## NEED TO UPDATES
                 name_list.append(self.unique2label(label))
             return name_list
 
-    def set_suppot(self, unique:str, UX = False, UY = False, UZ = False,
+    def assign_suppot(self, unique:str, UX = False, UY = False, UZ = False,
                    RX = False, RY = False, RZ = False, quick:str = None) :
         
         if quick == 'pin' :
@@ -88,23 +88,29 @@ class Points(GeometryObj) : ## NEED TO UPDATES
         Name = str(unique)
         Value = [UX, UY, UZ, RX, RY, RZ]
         
-        ret = self.obj.SetRestraint(Name, Value)
+        ret = self.obj.SetRestraint(Name, Value, 0)
         # print(ret)
         if ret[-1] == 0 :
             self.print_log(f'Point {unique} set support successfully.')
             return unique
         else :
-            self.print_log(f'Point {unique} do Not set successfully.')
+            self.print_log(f'Point {name} do Not set successfully.')
             return None
 
-    def set_spring(self, unique:str , stiff:list, is_replaced:bool=True):
-        Name = unique
-        K = stiff
+    def assign_spring(self, unique:str , spring_prop: str = '') :
+        Name = str(unique)
+        SpringProp = spring_prop
         ItemType = 0
-        IsLocalCSys = False
-        Replace = is_replaced
         
-        self.sapModel.PointObj.SetSpring(Name, K, ItemType, IsLocalCSys, Replace)
+        # returnValue = instance.SetSpringAssignment(Name, SpringProp, ItemType)
+        ret = self.sapModel.PointObj.SetSpringAssignment(Name, SpringProp, ItemType)
+        
+        if ret == 0 :
+            self.print_log(f'Point {unique} set spring successfully.')
+            return ret
+        else :
+            self.print_log(f'Point {unique} do Not set spring successfully.')
+            return None
         
     def assign_load(self, unique:str, load_pattern:str, loads, 
                     is_replaced:bool=True, is_gravity=False) :
@@ -122,9 +128,6 @@ class Points(GeometryObj) : ## NEED TO UPDATES
                                             ItemType)
 
     def assign_load(self) :
-        pass
-
-    def assign_spring(self, unique:str , stiff:list, is_replaced:bool=True):
         pass
 
     def unique2label(self, unique:str) : # OK
@@ -151,26 +154,26 @@ class Frames(GeometryObj) :
         self.obj = self.sapModel.FrameObj
     
     #----- Geometry -----#
-    def add(self, inputs:list, add_mode=0, sect_prop="Default", rotate=0) :
+    def add(self, inputs:list, add_by_2points = True, sect_prop = None, rotate=0) :
         sapModel = self.sapModel
 
-        Name = []
+        Name = ''
         PropName = sect_prop
         UserName = ''
         CSys = 'Global'
-        if add_mode == 0 :
+        if not add_by_2points :
             XI, YI, ZI = inputs[0]
             XJ, YJ, ZJ = inputs[1]
-            unique, returnValue = self.obj.AddByCoor(XI, YI,
+            # returnValue = instance.AddByCoord(XI, YI, ZI, XJ, YJ, ZJ, Name, PropName, UserName, CSys)
+            unique, _ = self.obj.AddByCoord(XI, YI,
                                     ZI, XJ, YJ, ZJ, Name, PropName, UserName, CSys) # API
-        elif add_mode == 1:
-            Point1, Point2 = inputs
-            unique, returnValue = self.obj.AddByPoint(Point1, 
-	                                Point2, Name, PropName, UserName) # API
         else :
-            returnValue = 1
-        
-        if returnValue == 0 :
+            Point1, Point2 = inputs
+            # returnValue = instance.AddByPoint(Point1, Point2, Name, PropName, UserName)
+            unique, _ = self.obj.AddByPoint(Point1, 
+	                                Point2, Name, PropName, UserName) # API
+
+        if unique :
             self.print_log(f'Frame {unique} is added successfully.')
             return unique
         else :
@@ -178,13 +181,19 @@ class Frames(GeometryObj) :
             return None
     
     def delete(self, unique) :
-        self.obj.Delete(unique)
+        ret = self.obj.Delete(unique)
+
+        return ret
 
     def set_selected(self, unique) :
-        self.obj.SetSelected(unique, True)
-        self.print_log(f'Frame {unique} is selected now')
+        if type(unique) != list :
+            unique = [unique]
+
+        for uniq in unique :
+            self.obj.SetSelected(str(uniq), True)
+            self.print_log(f'Frame {uniq} is selected now')
     
-    def set_material(self, unique:str, mat:str) : # TEST OK
+    def assign_material(self, unique:str, mat:str) :
         Name = unique
         PropName = mat
 
@@ -226,6 +235,9 @@ class Frames(GeometryObj) :
                 M3i = True
                 M2j = True
                 M3j = True
+            elif quick == 'P' :
+                P = True
+            
 
         ii = [P, V2i, V3i, T, M2i, M3i]
         jj = [False, V2j, V3j, False, M2j, M3j]
@@ -336,23 +348,40 @@ class Frames(GeometryObj) :
                 name_list.append(self.unique2label(label))
             return name_list
     
-    def unique2label(self, unique:str) :
+    def assign_spring(self, unique:str, spring_prop: str, isSelected = False) :
+        # returnValue = instance.SetSpringAssignment(Name, SpringProp, ItemType)
+
+        if isSelected :
+            ItemType = 2
+        else :
+            ItemType = 0
+
+        ret = self.obj.SetSpringAssignment(str(unique), spring_prop, ItemType)
+        print(ret)
+
+        if ret : 
+            self.print_log(f'Frame {unique} do not set spring!!')
+        else : 
+            self.print_log(f'Frame {unique} set spring successfully!!')
+
+    def assign_local_axis(self, unique: str, ang: float, isSelected = False) :
+
+        if isSelected :
+            ItemType = 2
+        else :
+            ItemType = 0
+
         Name = str(unique)
-        Label = ''
-        Story = ''
+        Ang = ang
 
-        ret = self.obj.GetLabelFromName(Name, Label, Story)
-        # print(ret)
-        return ret[0:2]
-    
-    def label2unique(self, story:str, label:str) :
-        Name = ''
-        Label = label
-        Story = story
+        #returnValue = instance.SetLocalAxes(Name, Ang, ItemType)
+        ret = self.obj.SetLocalAxes(Name, Ang, ItemType)
 
-        ret = self.obj.GetNameFromLabel(Label, Story, Name)
-        # print(ret)
-        return ret[0]
+        if ret : 
+            self.print_log(f'Frame {unique} do not set local axis!!')
+        else : 
+            self.print_log(f'Frame {unique} set local axis ({ang} deg) successfully!!')
+        
 
     def assign_load(self, unique:str, load_pattern:str, loading:float, is_force:bool = True, dir = 'g', is_replace = False) :
         Name = unique
@@ -370,11 +399,24 @@ class Frames(GeometryObj) :
         else :
             self.print_log(f'Frame {unique} does NOT assign load !!!!!!!!')
 
-    def assign_spring():
-        pass
 
-    def assign_local_axis():
-        pass 
+    def unique2label(self, unique:str) :
+        Name = str(unique)
+        Label = ''
+        Story = ''
+
+        ret = self.obj.GetLabelFromName(Name, Label, Story)
+        # print(ret)
+        return ret[0:2]
+    
+    def label2unique(self, story:str, label:str) :
+        Name = ''
+        Label = label
+        Story = story
+
+        ret = self.obj.GetNameFromLabel(Label, Story, Name)
+        # print(ret)
+        return ret[0]
         
 class Areas(GeometryObj) :
     def __init__(self, etabs, print_log) :
@@ -382,7 +424,7 @@ class Areas(GeometryObj) :
         self.obj = self.sapModel.AreaObj
     
     #----- Geometry -----#
-    def add(self, inputs:list, add_mode=0, sect_prop="Default", rotate=0) :
+    def add(self, inputs:list, add_mode=0, sect_prop= None, rotate=0) :
         NumberPoints = len(inputs)
         Name = []
         PropName = sect_prop
@@ -458,47 +500,23 @@ if __name__ == '__main__' :
 
     etabs = ETABS()
 
-    # uniq = etabs.Points.add([1,1,52.1])
-    # etabs.Points.delete('728')
-    # print(etabs.Points.unique2label(1670))
-    # print(etabs.Points.label2unique('PRF', 81))
-    # print(etabs.Points.get_name_list(by_unique=False))
-    # etabs.Points.set_suppot(1670, quick='free')
-
-    #### TEST material
-    # etabs.Frames.set_material("4040", "BEAM560") # OK
-
-    #### TEST section
-    # etabs.Frames.set_section('4040', 'SB2540CJ') # OK
-    # print(etabs.Frames.get_section('4040')) # OK
-
-    #### TEST release
-    # etabs.Frames.set_release("4040", quick='Mij') # OK
-    # print(etabs.Frames.get_release('4040')) # OK
-
-    #### TEST modifier
-    # etabs.Frames.set_modifier('4040', A = 0.002)
-    # print(etabs.Frames.get_modifier('4040'))
-
-    #### TEST rigidzone
-    # print(etabs.Frames.set_rigidzone('3496', .5))
-    etabs.sapModel.FrameObj.SetEndLengthOffset('3496', True, 0,0,1)
-    print(etabs.Frames.get_rigidzone('3496'))
-    # print(etabs.Frames.get_rigidzone('4040'))
-    # print(etabs.Frames.get_offset('4040'))
-
-    # print(etabs.Frames.get_name_list(by_unique=False))
-    # print(etabs.Frames.unique2label('3494'))
-    # print(etabs.Frames.label2unique('PRF', 'B96'))
-
-    # etabs.Frames.assign_load('4040', "DEAD", 1.1)
+    #### TEST Points ####
+    # uniq = etabs.Points.add([1,1,52.1]) # OK
+    # etabs.Points.delete('728') # OK
+    # print(etabs.Points.unique2label(1670)) # OK
+    # print(etabs.Points.label2unique('PRF', 81)) # OK
+    # print(etabs.Points.get_name_list(by_unique=False)) # OK
+    # etabs.Points.assign_suppot(2643, quick='free') # OK   
+    # print(etabs.Points.assign_spring('2643', spring_prop = 'KVFS')) # OK
     
-    # frames = etabs.Frames.get_name_list(by_unique = False)
-    # print(frames[0][0][0] == 'B')
-    # etabs.Frames.set_modifier(frames[0][0], T = 0.1)
 
-    # print(etabs.sapModel.FrameObj.SetEndLengthOffset('4040', True, 0, 0, 0))
-
-    # print(etabs.Frames.get_modifier('4040'))
-
-    # print(etabs.sapModel.FrameObj.GetEndLengthOffset('4040'))
+    #### TEST Frames ####
+    # etabs.Frames.add(inputs = ['2643', '24'], add_by_2points = True, sect_prop="BEAM210", rotate=0) # OK
+    # etabs.Frames.add(inputs = [[3.2, 62.6, 40.35], [32.2, 64.6, 40.35]], add_by_2points = False, sect_prop="BEAM210", rotate=0) # OK
+    # etabs.Frames.delete('32') # OK
+    # etabs.Frames.set_selected([1781, 1782, 1783, 1784]) # OK
+    # etabs.Frames.assign_material('1783', 'BEAM210') # OK
+    # etabs.Frames.assign_section(unique = '1783', sect = 'C5090CJ') # OK
+    # etabs.Frames.assign_release(unique = '1783', M2i = True) # OK
+    # etabs.Frames.assign_spring('1783', spring_prop = 'KV15000') # OK
+    # etabs.Frames.assign_local_axis('1783', ang = 0) # OK
