@@ -9,9 +9,9 @@ sys.path.append('\\'.join(cdr))
 import comtypes.client
 
 from setting import *
-# import api_setting_numbers
-# from yc_etabs_api.setting import *
+from yc_print import *
 
+#### Import ETABS APIs
 import file
 import geometry as geo
 import table as tb
@@ -21,7 +21,6 @@ import select_
 import design
 import results
 
-# Units Number Dictory
 
 class ETABS :
     def __init__(self, software : str = 'ETABS'):
@@ -38,72 +37,78 @@ class ETABS :
             etabs = comtypes.client.GetActiveObject(f"CSI.{software}.API.ETABSObject")
             
         except (OSError, comtypes.COMError):
-            print("No running instance of the program found or failed to attach.")
-            sys.exit(-1)
+            print_log("No running instance of the program found or failed to attach.")
+            # sys.exit(-1)
+            return None # Skip to adding following stuffs
         
-        print("Successfully Loaded")
+        print_log(f"{'#'*10}  Successfully Loaded  {'#'*10}")
 
         ## Setup ##
-        self.success = True
         sapModel = etabs.SapModel
         
+        # API Objects
+        self.success = True
         self.etabs = etabs
         self.sapModel = sapModel
 
+        # ETABS Info
         self.EDB_name = self.get_edb_name()
         self.EDB_path = self.get_edb_path()
-        print(f'EDB ({self.EDB_name}) is LOADED!!')
-        
-        self.set_units()
         self.version = self.get_version()
-        print(f'Set units (default tonf,m), and Get verion ({self.version})')
+        print_log(f'EDB ({self.EDB_name}) is LOADED!!')
+        
+        # Initialize ETABS
+        self.set_units()
+        print_log(f'Set units (default tonf,m), and Get verion ({self.version})')
+
+        print_log(f'\n{"#"*10}  Initialized  {"#"*10}')
 
         #### Loading Other Objects
-        self.Table = tb.Table(etabs)
-        mod =  'TABLE'
-        print(f'- {mod:10s} modulus is loaded')
+        self.Table = tb.Table(etabs, print_log)
+        print_log('TABLE', add_mod = True)
         
-        self.File = file.File(etabs)
-        mod =  'FILE'
-        print(f'- {mod:10s} modulus is loaded')
+        self.File = file.File(etabs, print_log)
+        print_log('FILE', add_mod = True)
 
-        self.Points = geo.Points(etabs)
-        mod =  'POINTS'
-        print(f'- {mod:10s} modulus is loaded')
+        self.Points = geo.Points(etabs, print_log)
+        print_log('POINTS', add_mod = True)
 
-        self.Frames = geo.Frames(etabs)
-        mod =  'FRAMES'
-        print(f'- {mod:10s} modulus is loaded')
+        self.Frames = geo.Frames(etabs, print_log)
+        print_log('FRAMES', add_mod = True)
 
-        self.Areas = geo.Areas(etabs)
-        mod =  'AREA'
-        print(f'- {mod:10s} modulus is loaded')
+        self.Areas = geo.Areas(etabs, print_log)
+        print_log('AREAS', add_mod = True)
 
-        self.Define = define.Define(etabs)
-        mod =  'DEFINE'
-        print(f'- {mod:10s} modulus is loaded')
+        self.Strips = geo.Strips(etabs, print_log)
+        print_log('STRIPS', add_mod = True)
 
-        self.Select = select_.Select(etabs)
-        mod =  'SELECT'
-        print(f'- {mod:10s} modulus is loaded')
+        self.Define = define.Define(etabs, print_log)
+        print_log('DEFINE', add_mod = True)
+
+        self.Select = select_.Select(etabs, print_log)
+        print_log('SELECT', add_mod = True)
 
         # self.LoadComb = load_.LoadComb(etabs)
         # mod =  'LOAD COMBINATION'
         # print(f'- {mod:10s} modulus is loaded')
 
-        self.Analyze = analyze.Analyze(etabs)
-        mod =  'ANALYZE'
-        print(f'- {mod:10s} modulus is loaded')
+        self.Analyze = analyze.Analyze(etabs, print_log)
+        print_log('ANALYZE', add_mod = True)
 
-        self.Results = results.Results(etabs)
-        mod =  'RESULT'
-        print(f'- {mod:10s} modulus is loaded')
+        self.Results = results.Results(etabs, print_log)
+        print_log('RESULT', add_mod = True)
 
-        self.Design = design.Design(etabs)
-        mod =  'Design'
-        print(f'- {mod:10s} modulus is loaded')
+        self.Design = design.Design(etabs, print_log)
+        print_log('Design', add_mod = True)
 
-    #### LOCK
+
+        
+        print_log(f'\n{"#"*10}  "{self.EDB_name}" is Connected!  {"#"*10}')
+
+
+
+
+    #### LOCK ####
     def is_locked(self) -> bool :
         return self.sapModel.GetModelIsLocked()
     
@@ -121,12 +126,12 @@ class ETABS :
         else :
             pass
     
-    #### Get Version
+    #### Get Version ####
     def get_version(self) :
         ver = self.sapModel.GetVersion()[0]
         return ver
     
-    #### UNITS
+    #### UNITS ####
     def set_units(self, units = ['tonf', 'm']) :
         num = units2num(f'{units[0]}_{units[1]}'.lower()) 
         self.sapModel.SetPresentUnits(num)
@@ -135,7 +140,7 @@ class ETABS :
         n = self.sapModel.GetPresentUnits()
         return num2units(n)
     
-    #### FILE
+    #### FILE ####
     def get_edb_name(self, with_full_path = False) :
         return self.sapModel.GetModelFilename(with_full_path)
     
@@ -144,14 +149,16 @@ class ETABS :
         del ret[-1]
         return '\\'.join(ret)
     
-    #### REFRESH
+    #### REFRESH ####
     def refresh(self) :
         obj = self.sapModel.View
         obj.RefreshView()
+
+    #### OTHER FUNCTIONS ####
 
 if __name__ == '__main__' :
     et = ETABS()
     
     # print(et.get_edb_path())
 
-    et.refresh()
+    # et.refresh()

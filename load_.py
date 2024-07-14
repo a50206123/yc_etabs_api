@@ -1,5 +1,5 @@
 class LoadComb :
-    def __init__(self, etabs) :
+    def __init__(self, etabs, print_log) :
         self.etabs = etabs
         self.sapModel = etabs.SapModel
         self.obj = self.sapModel.RespCombo

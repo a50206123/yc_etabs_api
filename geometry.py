@@ -2,12 +2,14 @@ import table as tb
 from setting import *
 
 class GeometryObj :
-    def __init__(self, etabs) :
+    def __init__(self, etabs, print_log) :
         sapModel = etabs.sapModel
         
         self.etabs = etabs
         self.sapModel = sapModel
-        self.Table = tb.Table(etabs)
+        self.print_log = print_log
+
+        self.Table = tb.Table(etabs, print_log)
 
     def add(self) :
         pass
@@ -19,8 +21,8 @@ class GeometryObj :
         pass
     
 class Points(GeometryObj) : ## NEED TO UPDATES
-    def __init__(self, etabs):
-        super().__init__(etabs)
+    def __init__(self, etabs, print_log) :
+        super().__init__(etabs, print_log)
         self.obj = self.sapModel.PointObj
 
     #----- Geometry -----#
@@ -32,10 +34,10 @@ class Points(GeometryObj) : ## NEED TO UPDATES
         unique, ret = self.obj.AddCartesian(x, y, z)
 
         if ret == 0 :
-            print(f'Point {unique}({x},{y},{z}) is added successfully.')
+            self.print_log(f'Point {unique}({x},{y},{z}) is added successfully.')
             return unique
         else :
-            print(f'Point ({x},{y},{z}) is Not added successfully.')
+            self.print_log(f'Point ({x},{y},{z}) is Not added successfully.')
             return None
     
     def delete(self, unique : str) :
@@ -44,16 +46,16 @@ class Points(GeometryObj) : ## NEED TO UPDATES
         # print(ret)
 
         if ret == 0 :
-            print(f'Point {unique} is deleted successfully.')
+            self.print_log(f'Point {unique} is deleted successfully.')
         else :
-            print(f'Point {unique} is Not deleted successfully.')
+            self.print_log(f'Point {unique} is Not deleted successfully.')
     
     def get_name_list(self, by_unique = True) :
         NumberNames = 0
         MyName = []
         ret = self.obj.GetNameList(NumberNames, MyName)
         # print(ret)
-        print(f'Total Number of Points = {ret[0]}')
+        self.print_log(f'Total Number of Points = {ret[0]}')
         
         if by_unique :
             return ret[1]
@@ -89,10 +91,10 @@ class Points(GeometryObj) : ## NEED TO UPDATES
         ret = self.obj.SetRestraint(Name, Value)
         # print(ret)
         if ret[-1] == 0 :
-            print(f'Point {unique} set support successfully.')
+            self.print_log(f'Point {unique} set support successfully.')
             return unique
         else :
-            print(f'Point {unique} do Not set successfully.')
+            self.print_log(f'Point {unique} do Not set successfully.')
             return None
 
     def set_spring(self, unique:str , stiff:list, is_replaced:bool=True):
@@ -122,6 +124,9 @@ class Points(GeometryObj) : ## NEED TO UPDATES
     def assign_load(self) :
         pass
 
+    def assign_spring(self, unique:str , stiff:list, is_replaced:bool=True):
+        pass
+
     def unique2label(self, unique:str) : # OK
         Name = str(unique)
         Label = ''
@@ -141,8 +146,8 @@ class Points(GeometryObj) : ## NEED TO UPDATES
         return ret[0]
     
 class Frames(GeometryObj) :
-    def __init__(self, etabs) :
-        super().__init__(etabs)
+    def __init__(self, etabs, print_log):
+        super().__init__(etabs, print_log)
         self.obj = self.sapModel.FrameObj
     
     #----- Geometry -----#
@@ -166,10 +171,10 @@ class Frames(GeometryObj) :
             returnValue = 1
         
         if returnValue == 0 :
-            print(f'Frame {unique} is added successfully.')
+            self.print_log(f'Frame {unique} is added successfully.')
             return unique
         else :
-            print('No Frame is added.')
+            self.print_log('No Frame is added.')
             return None
     
     def delete(self, unique) :
@@ -177,7 +182,7 @@ class Frames(GeometryObj) :
 
     def set_selected(self, unique) :
         self.obj.SetSelected(unique, True)
-        print(f'Frame {unique} is selected now')
+        self.print_log(f'Frame {unique} is selected now')
     
     def set_material(self, unique:str, mat:str) : # TEST OK
         Name = unique
@@ -186,22 +191,22 @@ class Frames(GeometryObj) :
         ret = self.obj.SetMaterialOverwrite(Name, PropName)
 
         if ret == 0 :
-            print(f'Frame {unique} change material {mat} successfully!!')
+            self.print_log(f'Frame {unique} change material {mat} successfully!!')
         else :
-            print(f'Frame {unique} do NOT change material {mat} !!!!!!!!')
+            self.print_log(f'Frame {unique} do NOT change material {mat} !!!!!!!!')
 
-    def set_section(self, unique:str, sect:str) : # TEST OK
+    def assign_section(self, unique:str, sect:str) : # TEST OK
         Name = unique
         PropName = sect
 
         ret = self.obj.SetSection(Name, PropName)
 
         if ret == 0 :
-            print(f'Frame {unique} changes section {sect} successfully!!')
+            self.print_log(f'Frame {unique} changes section {sect} successfully!!')
         else :
-            print(f'Frame {unique} does NOT change section {sect} !!!!!!!!')
+            self.print_log(f'Frame {unique} does NOT change section {sect} !!!!!!!!')
 
-    def set_release(self, unique:str, 
+    def assign_release(self, unique:str, 
                     P:bool = False, T:bool = False,
                     V2i:bool = False, V2j:bool = False,
                     V3i:bool = False, V3j:bool = False,
@@ -230,9 +235,9 @@ class Frames(GeometryObj) :
         ret = self.obj.SetReleases(unique, ii, jj, StartValue, EndValue)[-1]
 
         if ret == 0 :
-            print(f'Frame {unique} set release successfully!!')
+            self.print_log(f'Frame {unique} set release successfully!!')
         else :
-            print(f'Frame {unique} do NOT set release !!!!!!!!')
+            self.print_log(f'Frame {unique} do NOT set release !!!!!!!!')
     
     def get_release(self, unique:str) : # TEST OK
         Name = unique
@@ -243,7 +248,7 @@ class Frames(GeometryObj) :
 
         return self.obj.GetReleases(Name, II, JJ, StartValue, EndValue)[0:2]
     
-    def set_rigidzone(self,unique:str, RZ:float) : # OK
+    def assign_rigidzone(self,unique:str, RZ:float) : # OK
         AutoOffset, Length1, Length2  = self.get_offset(unique)
         Name = unique
 
@@ -251,9 +256,9 @@ class Frames(GeometryObj) :
         
         ret = self.obj.SetEndLengthOffset(Name, AutoOffset, Length1, Length2, RZ)
         if ret == 0 :
-            print(f'Frame {unique} sets rigidzone successfully!!')
+            self.print_log(f'Frame {unique} sets rigidzone successfully!!')
         else :
-            print(f'Frame {unique} does NOT set rigidzone !!!!!!!!')
+            self.print_log(f'Frame {unique} does NOT set rigidzone !!!!!!!!')
     
     def get_offset(self, unique:str) : # OK
         Name = unique
@@ -279,7 +284,7 @@ class Frames(GeometryObj) :
         
         return ret
     
-    def set_modifier(self, unique:str, A:float = None,
+    def assign_modifier(self, unique:str, A:float = None,
                      V2:float = None, V3:float = None,
                      T:float = None,
                      M2:float = None, M3 :float = None,
@@ -299,9 +304,9 @@ class Frames(GeometryObj) :
         ret = self.obj.SetModifiers(Name, Value)[-1]
 
         if ret == 0 :
-            print(f'Frame {unique} set modifiers successfully!!')
+            self.print_log(f'Frame {unique} set modifiers successfully!!')
         else :
-            print(f'Frame {unique} do NOT set modifiers !!!!!!!!')
+            self.print_log(f'Frame {unique} do NOT set modifiers !!!!!!!!')
 
     def get_modifier(self, unique:str) : # TEST OK
         Name = unique
@@ -320,7 +325,7 @@ class Frames(GeometryObj) :
         MyName = []
         ret = self.obj.GetNameList(NumberNames, MyName)
         # print(ret)
-        print(f'Total Number of Frame = {ret[0]}')
+        self.print_log(f'Total Number of Frame = {ret[0]}')
         
         if by_unique :
             return ret[1]
@@ -361,14 +366,19 @@ class Frames(GeometryObj) :
                             Dist1, Dist2, Val1, Val2, Replace = Replace)
         
         if ret == 0 :
-            print(f'Frame {unique} assigns {load_pattern} = {loading:.3f} successfully!!')
+            self.print_log(f'Frame {unique} assigns {load_pattern} = {loading:.3f} successfully!!')
         else :
-            print(f'Frame {unique} does NOT assign load !!!!!!!!')
-        
+            self.print_log(f'Frame {unique} does NOT assign load !!!!!!!!')
+
+    def assign_spring():
+        pass
+
+    def assign_local_axis():
+        pass 
         
 class Areas(GeometryObj) :
-    def __init__(self, etabs) :
-        super().__init__(etabs)
+    def __init__(self, etabs, print_log) :
+        super().__init__(etabs, print_log)
         self.obj = self.sapModel.AreaObj
     
     #----- Geometry -----#
@@ -397,14 +407,51 @@ class Areas(GeometryObj) :
             returnValue = 1
         
         if returnValue == 0 :
-            print(f'Frame {unique} added successfully.')
+            self.print_log(f'Area {unique} added successfully.')
             return unique
         else :
-            print('No Frame Added.')
+            self.print_log('No Area Added.')
             return None
     
     def delete(self, unique) :
         self.obj.Delete(unique)
+
+    def assign_section(self, unique:str, section:str) :
+        pass
+
+    def assign_modifier(self, unique:str, modifier:str) :
+        pass
+
+    def assign_local_axis(self, unique:str, axis:str) :
+        pass
+
+    def assign_diaphragm(self, unique:str, diaphragm:str) :
+        pass
+
+    def assign_uniform_load(self, unique:str, load_pattern:str, loading:float) :
+        pass
+
+    def assign_load_set(self, unique:str, load_set:str) :
+        pass
+
+    def assign_automesh(self, unique:str) :
+        pass
+
+    def assign_spring(self, unique:str , stiff:list, is_replaced:bool=True) :
+        pass
+
+class Strips(GeometryObj) :
+    def __init__(self, etabs, print_log) :
+        super().__init__(etabs, print_log)
+        # self.obj = self.sapModel.StripObj
+
+    def add(self) :
+        pass
+
+    def assign_material(self) :
+        pass
+
+    
     
 if __name__ == '__main__' :
     from yc_etabs_api.etabs import ETABS

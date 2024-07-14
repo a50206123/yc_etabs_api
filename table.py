@@ -3,7 +3,7 @@ import pandas as pd
 # from etabs import ETABS
 
 class Table :
-    def __init__(self, etabs):
+    def __init__(self, etabs, print_log):
         self.etabs = etabs
         self.sapModel = etabs.sapModel
 

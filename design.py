@@ -1,18 +1,18 @@
 from geometry import Frames
 
 class Design :
-    def __init__(self, etabs) -> None:
-        self.ConcFrame = ConcFrame(etabs)
-        self.ConcSlab = None
+    def __init__(self, etabs, print_log) -> None:
+        self.ConcreteFrame = ConcreteFrame(etabs, print_log)
+        self.ConcreteSlab = None
         self.Steel = None    
 
 
-class ConcFrame :
-    def __init__(self, etabs) -> None:
+class ConcreteFrame :
+    def __init__(self, etabs, print_log) -> None:
         self.etabs = etabs
         self.sapModel = etabs.SapModel
         self.obj = etabs.sapModel.DesignConcrete
-        self.Frame = Frames(self.etabs)
+        self.Frame = Frames(self.etabs, print_log)
 
     def set_code(self, code = 'ACI318-14') :
         if code == 'ACI318-14' :
@@ -97,6 +97,9 @@ class ConcFrame :
                 return 'sway'
             elif val == 4 :
                 return 'nonsway'
+            
+    def start() :
+        pass
 
 
 if __name__ == "__main__" :

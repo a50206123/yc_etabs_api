@@ -1,6 +1,6 @@
 
 class Analyze() :
-    def __init__(self, etabs) -> None:
+    def __init__(self, etabs, print_log) -> None:
         self.etabs = etabs
         self.sapModel = etabs.sapModel
         self.obj = self.sapModel.Analyze

@@ -4,25 +4,29 @@ import math
 import load_
 
 class Define() :
-    def __init__(self, etabs) -> None:
+    def __init__(self, etabs, print_log) -> None:
         self.etabs = etabs
         self.sapModel = etabs.sapModel
 
-        self.Material = Material(etabs)
-        self.FrameSect = FrameSect(etabs)
+        self.Material = Material(etabs, print_log)
+        self.FrameSect = FrameSect(etabs, print_log)
         self.AreaSect = None
-        self.Diaph = None
+        self.Diaphragm = None
         self.PointSpring = None
         self.LineSpring = None
         self.AreaSpring = None
 
         self.LoadPattern = None
-        self.LoadComb = load_.LoadComb(etabs)
+        self.LoadCase = None
+        self.LoadComb = load_.LoadComb(etabs, print_log)
+        self.LoadSet = None
+        self.ResponseSpectralFunction = None
+        self.TimeHistoryFunction = None
 
-        self.MassSource = MassSource(etabs)
+        self.MassSource = MassSource(etabs, print_log)
 
 class Material() :
-    def __init__(self, etabs) -> None:
+    def __init__(self, etabs, print_log) -> None:
         self.etabs = etabs
         self.sapModel = etabs.sapModel
         self.obj = self.sapModel.PropMaterial
@@ -111,7 +115,7 @@ class Material() :
             print(f'Material {name} do NOT set Unit Weight !!!!!!!!')
 
 class FrameSect :
-    def __init__(self, etabs) -> None:
+    def __init__(self, etabs, print_log) -> None:
         self.etabs = etabs
         self.sapModel = etabs.sapModel
         self.obj = self.sapModel.PropFrame
@@ -217,7 +221,7 @@ class FrameSect :
             print(f'FrameSection {name} do NOT set parameters of concrete column !!!!!!!!')
 
 class MassSource() :
-    def __init__(self, etabs) -> None:
+    def __init__(self, etabs, print_log) -> None:
         self.etabs = etabs
         self.sapModel = etabs.sapModel
         self.obj = self.sapModel.PropMaterial
