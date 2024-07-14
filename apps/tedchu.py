@@ -12,6 +12,7 @@ fy_enum = {
 }
 
 
+
 #### Function Zone ####
 ## Common Operations
 def torsion_reduction(etabs, print_log) :
@@ -27,14 +28,55 @@ def torsion_reduction(etabs, print_log) :
 def set_nonsway(etabs, print_log) :
     obj = etabs.sapModel
 
+    # What's beam will be reduced
+    prefix = ['FB', 'SB']
+
+    # Assign Non-Sway
+
+    # Return
 
 ## Rules of Definition
-def create_concrete_column(etabs, print_log) :
+def create_concrete_column(etabs, print_log, column_info) :
     obj = etabs.sapModel
 
-def create_concrete_beam(etabs, print_log) :
+    # Column Information
+    # BxH, fc, fy, cover
+    b = column_info['B']
+    h = column_info['H']
+    fc = column_info['fc']
+    fy = column_info['fy']
+    cover = column_info['cover']
+
+    # Define Column Section
+
+    # Return
+    
+
+def create_concrete_beam(etabs, print_log, beam_info, prefix) :
     obj = etabs.sapModel
 
-def change_story_material(etabs, print_log) :
+    # Column Information
+    # BxH, fc, fy, cover
+    b = beam_info['B']
+    h = beam_info['H']
+    fc = beam_info['fc']
+    fy = beam_info['fy']
+    cover_top, cover_bot = beam_info['cover']
+
+
+    # Define Column Section
+
+    # Return
+
+def change_story_material(etabs, print_log, story_material) :
+    #################################
+    #
+    # story_material = {
+    #   story:str : [fc:str, fy_c:str, fy_b:str, fy_sb:str, fy_fb:str]
+    # }
+    #
+    #################################
+    
     obj = etabs.sapModel
 
+    
