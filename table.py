@@ -1,5 +1,7 @@
 import numpy as np
 import pandas as pd
+
+from yc_print import print_log
 # from etabs import ETABS
 
 class Table :
@@ -28,10 +30,10 @@ class Table :
             FieldsKeysIncluded, NumberRecords, TableData)
             
         if not table :
-            print('No Tables to read')
+            print_log('No Tables to read', self.etabs.msg_signal)
             return None
         
-        print(f'Successfully Read Table ({key})')
+        print_log(f'Successfully Read Table ({key})', self.etabs.msg_signal))
         
         fields = table[2]
         datas = table[4]
@@ -40,10 +42,10 @@ class Table :
         data = np.reshape(datas, (int(len(datas)/n),n))
         
         if col == None :
-            print('Got all tables')
+            print_log('Got all tables', self.etabs.msg_signal))
             return pd.DataFrame(data, columns= fields)
         else :
-            print(f'Got some tables of which is {[x for x in fields]}')
+            print_log(f'Got some tables of which is {[x for x in fields]}', self.etabs.msg_signal)
             get_col = []
             for i in range(n) :
                 if fields[i] in col :
@@ -83,7 +85,7 @@ class Table :
             'return' : ret
         }
         
-        print(f'Apply tables successfully. ({key})')
+        print_log(f'Apply tables successfully. ({key})', self.etabs.msg_signal)
         return results
 
     def get_all_tables(self) :
@@ -159,12 +161,14 @@ if __name__ == '__main__' :
     from etabs import ETABS
     
     et = ETABS()
-    tb = Table(et)
+    # tb = Table(et)
     
-    sd = tb.read('Story Definitions', ['Story', 'Height'])
-    cfd= tb.read('Concrete Frame Design Preferences - ACI 318-19')
+    # sd = tb.read('Story Definitions', ['Story', 'Height'])
+    # cfd= tb.read('Concrete Frame Design Preferences - ACI 318-19')
     
-    pt = tb.get_points()
-    bm = tb.get_beam_connectivity(case = 0)
-    col = tb.get_col_connectivity(case = 0)
-    frame_prop = tb.get_frame_sect_prop(case = 0)
+    # pt = tb.get_points()
+    # bm = tb.get_beam_connectivity(case = 0)
+    # col = tb.get_col_connectivity(case = 0)
+    # frame_prop = tb.get_frame_sect_prop(case = 0)
+
+    pass

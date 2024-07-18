@@ -12,22 +12,22 @@ from setting import *
 from yc_print import *
 
 #### Import ETABS APIs
-import file
-import geometry as geo
+import file, points, frames, areas, strips
 import table as tb
-import analyze
-import define
-import select_
-import design
-import results
+import analyze, define, select_, design, results
+
+## APPS
+from apps.tedchu import TedChuMethods
 
 
 class ETABS :
-    def __init__(self, software : str = 'ETABS'):
+    def __init__(self, software : str = 'ETABS', isTedChu = False):
         self.software = software
         self.etabs = None
         self.sap = None
         self.success = False
+
+        self.msg_signal = msg_signal
     
         try:  
             #To get the active ETABS object
@@ -41,7 +41,7 @@ class ETABS :
             # sys.exit(-1)
             return None # Skip to adding following stuffs
         
-        print_log(f"{'#'*10}  Successfully Loaded  {'#'*10}")
+        print_log(f"{'#'*10}  Successfully Loaded  {'#'*10}", self.msg_signal)
 
         ## Setup ##
         sapModel = etabs.SapModel
@@ -55,55 +55,57 @@ class ETABS :
         self.EDB_name = self.get_edb_name()
         self.EDB_path = self.get_edb_path()
         self.version = self.get_version()
-        print_log(f'EDB ({self.EDB_name}) is LOADED!!')
+        print_log(f'EDB ({self.EDB_name}) is LOADED!!', self.msg_signal)
         
         # Initialize ETABS
         self.set_units()
-        print_log(f'Set units (default tonf,m), and Get verion ({self.version})')
+        print_log(f'Set units (default tonf,m), and Get verion ({self.version})', self.msg_signal)
 
-        print_log(f'\n{"#"*10}  Initialized  {"#"*10}')
+        print_log(f'\n{"#"*10}  Initialized  {"#"*10}', self.msg_signal)
 
         #### Loading Other Objects
         self.Table = tb.Table(etabs, print_log)
-        print_log('TABLE', add_mod = True)
+        print_log('TABLE', self.msg_signal, add_mod = True)
         
         self.File = file.File(etabs, print_log)
-        print_log('FILE', add_mod = True)
+        print_log('FILE', self.msg_signal, add_mod = True)
 
-        self.Points = geo.Points(etabs, print_log)
-        print_log('POINTS', add_mod = True)
+        self.Points = points.Points(etabs, print_log)
+        print_log('POINTS', self.msg_signal, add_mod = True)
 
-        self.Frames = geo.Frames(etabs, print_log)
-        print_log('FRAMES', add_mod = True)
+        self.Frames = frames.Frames(etabs, print_log)
+        print_log('FRAMES', self.msg_signal, add_mod = True)
 
-        self.Areas = geo.Areas(etabs, print_log)
-        print_log('AREAS', add_mod = True)
+        self.Areas = areas.Areas(etabs, print_log)
+        print_log('AREAS', self.msg_signal, add_mod = True)
 
-        self.Strips = geo.Strips(etabs, print_log)
-        print_log('STRIPS', add_mod = True)
+        self.Strips = strips.Strips(etabs, print_log)
+        print_log('STRIPS', self.msg_signal, add_mod = True)
 
         self.Define = define.Define(etabs, print_log)
-        print_log('DEFINE', add_mod = True)
+        print_log('DEFINE', self.msg_signal, add_mod = True)
 
         self.Select = select_.Select(etabs, print_log)
-        print_log('SELECT', add_mod = True)
+        print_log('SELECT', self.msg_signal, add_mod = True)
 
         # self.LoadComb = load_.LoadComb(etabs)
         # mod =  'LOAD COMBINATION'
         # print(f'- {mod:10s} modulus is loaded')
 
         self.Analyze = analyze.Analyze(etabs, print_log)
-        print_log('ANALYZE', add_mod = True)
+        print_log('ANALYZE', self.msg_signal, add_mod = True)
 
         self.Results = results.Results(etabs, print_log)
-        print_log('RESULT', add_mod = True)
+        print_log('RESULT', self.msg_signal, add_mod = True)
 
         self.Design = design.Design(etabs, print_log)
-        print_log('Design', add_mod = True)
+        print_log('Design', self.msg_signal, add_mod = True)
 
-
+        if isTedChu :
+            self.TedChu = TedChuMethods(etabs, self.msg_signal)
+            print_log('TedChu', self.msg_signal, add_mod = True)
         
-        print_log(f'\n{"#"*10}  "{self.EDB_name}" is Connected!  {"#"*10}\n\n')
+        print_log(f'\n{"#"*10}  "{self.EDB_name}" is Connected!  {"#"*10}\n\n', self.msg_signal)
 
 
 

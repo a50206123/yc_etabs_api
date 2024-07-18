@@ -12,71 +12,74 @@ fy_enum = {
 }
 
 
-
+class TedChuMethods :
+    def __init__(self, etabs, msg_singal) :
+        self.etabs = etabs
+        self.new_msg_signal = msg_singal
 #### Function Zone ####
 ## Common Operations
-def torsion_reduction(etabs, print_log) :
-    obj = etabs.sapModel
+    def torsion_reduction(self) :
+        obj = self.etabs.sapModel
 
-    # What's beam will be reduced
-    prefix = ['B', 'SB']
+        # What's beam will be reduced
+        prefix = ['B', 'SB']
 
-    # Assign Torsion Reduction
+        # Assign Torsion Reduction
 
-    # Return
+        # Return
 
-def set_nonsway(etabs, print_log) :
-    obj = etabs.sapModel
+    def set_nonsway(self) :
+        obj = self.etabs.sapModel
 
-    # What's beam will be reduced
-    prefix = ['FB', 'SB']
+        # What's beam will be reduced
+        prefix = ['FB', 'SB']
 
-    # Assign Non-Sway
+        # Assign Non-Sway
 
-    # Return
+        # Return
 
-## Rules of Definition
-def create_concrete_column(etabs, print_log, column_info) :
-    obj = etabs.sapModel
+    ## Rules of Definition
+    def create_concrete_column(self, column_info) :
+        obj = self.etabs.sapModel
 
-    # Column Information
-    # BxH, fc, fy, cover
-    b = column_info['B']
-    h = column_info['H']
-    fc = column_info['fc']
-    fy = column_info['fy']
-    cover = column_info['cover']
+        # Column Information
+        # BxH, fc, fy, cover
+        b = column_info['B']
+        h = column_info['H']
+        fc = column_info['fc']
+        fy = column_info['fy']
+        cover = column_info['cover']
 
-    # Define Column Section
+        # Define Column Section
 
-    # Return
-    
+        # Return
+        
 
-def create_concrete_beam(etabs, print_log, beam_info, prefix) :
-    obj = etabs.sapModel
+    def create_concrete_beam(self, beam_info, prefix) :
+        obj = self.etabs.sapModel
 
-    # Column Information
-    # BxH, fc, fy, cover
-    b = beam_info['B']
-    h = beam_info['H']
-    fc = beam_info['fc']
-    fy = beam_info['fy']
-    cover_top, cover_bot = beam_info['cover']
+        # Column Information
+        # BxH, fc, fy, cover
+        b = beam_info['B']
+        h = beam_info['H']
+        fc = beam_info['fc']
+        fy = beam_info['fy']
+        cover_top, cover_bot = beam_info['cover']
 
 
-    # Define Column Section
+        # Define Column Section
 
-    # Return
+        # Return
 
-def change_story_material(etabs, print_log, story_material) :
-    #################################
-    #
-    # story_material = {
-    #   story:str : [fc:str, fy_c:str, fy_b:str, fy_sb:str, fy_fb:str]
-    # }
-    #
-    #################################
-    
-    obj = etabs.sapModel
+    def change_story_material(self, story_material) :
+        #################################
+        #
+        # story_material = {
+        #   story:str : [fc:str, fy_c:str, fy_b:str, fy_sb:str, fy_fb:str]
+        # }
+        #
+        #################################
+        
+        obj = self.etabs.sapModel
 
     
