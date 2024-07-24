@@ -1,8 +1,11 @@
 class Results :
-    def __init__(self, etabs, print_log) -> None:
+    def __init__(self, etabs, print_log, msg_signal) -> None:
         self.etabs = etabs
         self.sapModel = etabs.SapModel
         self.obj = self.sapModel.Results
+
+        self.print_log = print_log
+        self.msg_signal = msg_signal
     
     def set_output_case_combo(self, cases:list = ["DEAD", "LIVE"], combos:list = [], is_replace:bool = True) :
         # Deselect all cases and combinations

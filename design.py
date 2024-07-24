@@ -1,18 +1,21 @@
-from geometry import Frames
+from frames import Frames
 
 class Design :
-    def __init__(self, etabs, print_log) -> None:
-        self.ConcreteFrame = ConcreteFrame(etabs, print_log)
+    def __init__(self, etabs, print_log, msg_signal) -> None:
+        self.ConcreteFrame = ConcreteFrame(etabs, print_log, msg_signal)
         self.ConcreteSlab = None
         self.Steel = None    
 
 
 class ConcreteFrame :
-    def __init__(self, etabs, print_log) -> None:
+    def __init__(self, etabs, print_log, msg_signal) -> None:
         self.etabs = etabs
         self.sapModel = etabs.SapModel
         self.obj = etabs.sapModel.DesignConcrete
-        self.Frame = Frames(self.etabs, print_log)
+        self.Frame = Frames(self.etabs, print_log, msg_signal)
+
+        self.print_log = print_log
+        self.msg_signal = msg_signal
 
     def set_code(self, code = 'ACI318-14') :
         if code == 'ACI318-14' :
@@ -65,9 +68,9 @@ class ConcreteFrame :
         
         label, story = self.Frame.unique2label(name)
         if ret == 0 :
-            print(f'Frame {name} ({story} {label}) sets overwrite successfully ({quick})')
+            self.print_log(f'Frame {name} ({story} {label}) sets overwrite successfully ({quick})', self.msg_signal)
         else :
-            print(f'Frame {name} ({story} {label}) does not set overwrite successfully ')
+            self.print_log(f'Frame {name} ({story} {label}) does not set overwrite successfully ', self.msg_signal)
 
     def get_overwrite(self, name:str, item:int, quick:str = None) :
         code = self.get_code()

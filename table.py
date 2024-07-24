@@ -5,11 +5,14 @@ from yc_print import print_log
 # from etabs import ETABS
 
 class Table :
-    def __init__(self, etabs, print_log):
+    def __init__(self, etabs, print_log, msg_signal):
         self.etabs = etabs
         self.sapModel = etabs.sapModel
 
         self.obj = self.sapModel.DatabaseTables
+
+        self.print_log = print_log
+        self.msg_signal = msg_signal
 
         # print('To Load Table successfully!')
     #### READ TABLE    
@@ -33,7 +36,7 @@ class Table :
             print_log('No Tables to read', self.etabs.msg_signal)
             return None
         
-        print_log(f'Successfully Read Table ({key})', self.etabs.msg_signal))
+        print_log(f'Successfully Read Table ({key})', self.etabs.msg_signal)
         
         fields = table[2]
         datas = table[4]
@@ -42,7 +45,7 @@ class Table :
         data = np.reshape(datas, (int(len(datas)/n),n))
         
         if col == None :
-            print_log('Got all tables', self.etabs.msg_signal))
+            print_log('Got all tables', self.etabs.msg_signal)
             return pd.DataFrame(data, columns= fields)
         else :
             print_log(f'Got some tables of which is {[x for x in fields]}', self.etabs.msg_signal)

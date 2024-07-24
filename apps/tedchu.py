@@ -11,32 +11,69 @@ fy_enum = {
     'J' : 4200, 'Q' : 5000, 'K' : 5600
 }
 
+# from yc_etabs_api import ETABS
 
 class TedChuMethods :
-    def __init__(self, etabs, msg_singal) :
+    def __init__(self, etabs, print_log) :
         self.etabs = etabs
-        self.new_msg_signal = msg_singal
-#### Function Zone ####
-## Common Operations
-    def torsion_reduction(self) :
-        obj = self.etabs.sapModel
+        self.print_log = print_log
 
+    #### Function Zone ####
+    ## Common Operations
+    def release(self, release_end = "") :
+        self.etabs.model_unlock()
+        selected_frames = self.etabs.Select.get(type_='Frame')
+        
+        for frame in selected_frames :
+            if release_end == "" :
+                self.etabs.Frames.assign_release(frame)
+            else :
+                self.etabs.Frames.assign_release(frame, quick = release_end)
+        
+        self.etabs.refresh()
+    
+    def torsion_reduction(self, reduction = 0.1) :
+        self.etabs.model_unlock()    
+        frames = self.etabs.Frames.get_name_list(by_unique = True)
+        
         # What's beam will be reduced
-        prefix = ['B', 'SB']
+        prefix = ['B', 'S']
 
         # Assign Torsion Reduction
+        for frame in frames :
+            section = self.etabs.Frames.get_section(frame)
+            J_orig = self.etabs.Frames.get_modifier(frame)[3]
+
+            if section[0] in prefix and J_orig != reduction :
+                self.etabs.Frames.assign_modifier(frame, T = reduction)
 
         # Return
+        self.etabs.refresh()
 
     def set_nonsway(self) :
-        obj = self.etabs.sapModel
+        self.etabs.model_unlock()    
+        frames = self.etabs.Frames.get_name_list(by_unique = True)
 
         # What's beam will be reduced
-        prefix = ['FB', 'SB']
+        frame_prefix = ['F', 'S']
 
         # Assign Non-Sway
+        for frame in frames :
+            if self.etabs.Define.Material.get(self.etabs.Frames.get_section(frame))['mat_type'] != 2 :
+                # Not Concrete then SKIP
+                continue
+            
+            sect = self.etabs.Frames.get_section(frame)
+            frame_type = self.etabs.Design.ConcreteFrame.get_overwrite(frame, 0, quick = 'frame type')
+
+            if (sect[0] in frame_prefix) and (frame_type != 'nonsway') :
+                self.etabs.Design.ConcFrame.set_overwrite(frame, 0, 0, quick = 'nonsway')
+            elif not (sect[0] in frame_prefix) and (frame_type != 'sway') :
+                self.etabs.Design.ConcFrame.set_overwrite(frame, 0, 0, quick = 'sway')
+        
 
         # Return
+        self.etabs.refresh()
 
     ## Rules of Definition
     def create_concrete_column(self, column_info) :

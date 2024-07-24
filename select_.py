@@ -1,10 +1,13 @@
 # from etabs import ETABS
 
 class Select() :
-    def __init__(self, etabs, print_log) -> None:
+    def __init__(self, etabs, print_log, msg_signal) -> None:
         self.etabs = etabs
         self.sapModel = etabs.sapModel
         self.obj = self.sapModel.SelectObj
+
+        self.print_log = print_log
+        self.msg_signal = msg_signal
     
     def all(self, deselect = False) :
         ret = self.obj.All(deselect)
@@ -25,9 +28,9 @@ class Select() :
 
         if ret == 0 :
             if deselect :
-                print(f'Object in group {name} is deselected')
+                self.print_log(f'Object in group {name} is deselected', self.msg_signal)
             else :
-                print(f'Object in group {name} is selected')
+                self.print_log(f'Object in group {name} is selected', self.msg_signal)
 
     def get(self, type_ = 'Frame') :
         NumberItems = 0

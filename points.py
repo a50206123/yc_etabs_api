@@ -2,8 +2,8 @@ from geometry import GeometryObj
 import yc_print as print_log
 
 class Points(GeometryObj) : ## NEED TO UPDATES
-    def __init__(self, etabs, print_log) :
-        super().__init__(etabs, print_log)
+    def __init__(self, etabs, print_log, msg_signal) :
+        super().__init__(etabs, print_log, msg_signal)
         self.obj = self.sapModel.PointObj
 
     #----- Geometry -----#

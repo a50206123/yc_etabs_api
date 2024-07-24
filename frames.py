@@ -1,9 +1,9 @@
 from geometry import GeometryObj
-import yc_print as print_log
+# import yc_print as print_log
 
 class Frames(GeometryObj) :
-    def __init__(self, etabs, print_log):
-        super().__init__(etabs, print_log)
+    def __init__(self, etabs, print_log, msg_signal):
+        super().__init__(etabs, print_log, msg_signal)
         self.obj = self.sapModel.FrameObj
     
     #----- Geometry -----#
@@ -27,10 +27,10 @@ class Frames(GeometryObj) :
 	                                Point2, Name, PropName, UserName) # API
 
         if unique :
-            print_log(f'Frame {unique} is added successfully.')
+            self.print_log(f'Frame {unique} is added successfully.')
             return unique
         else :
-            print_log('No Frame is added.')
+            self.print_log('No Frame is added.')
             return None
     
     def delete(self, unique) :
@@ -44,7 +44,7 @@ class Frames(GeometryObj) :
 
         for uniq in unique :
             self.obj.SetSelected(str(uniq), True)
-            print_log(f'Frame {uniq} is selected now', self.msg_signal)
+            self.print_log(f'Frame {uniq} is selected now', self.msg_signal)
     
     def assign_material(self, unique:str, mat:str) :
         Name = unique
@@ -53,9 +53,9 @@ class Frames(GeometryObj) :
         ret = self.obj.SetMaterialOverwrite(Name, PropName)
 
         if ret == 0 :
-            print_log(f'Frame {unique} change material {mat} successfully!!', self.msg_signal)
+            self.print_log(f'Frame {unique} change material {mat} successfully!!', self.msg_signal)
         else :
-            print_log(f'Frame {unique} do NOT change material {mat} !!!!!!!!', self.msg_signal)
+            self.print_log(f'Frame {unique} do NOT change material {mat} !!!!!!!!', self.msg_signal)
 
     def assign_section(self, unique:str, sect:str) : # TEST OK
         Name = unique
@@ -64,15 +64,15 @@ class Frames(GeometryObj) :
         ret = self.obj.SetSection(Name, PropName)
 
         if ret == 0 :
-            print_log(f'Frame {unique} changes section {sect} successfully!!', self.msg_signal)
+            self.print_log(f'Frame {unique} changes section {sect} successfully!!', self.msg_signal)
         else :
-            print_log(f'Frame {unique} does NOT change section {sect} !!!!!!!!', self.msg_signal)
+            self.print_log(f'Frame {unique} does NOT change section {sect} !!!!!!!!', self.msg_signal)
 
     def assign_release(self, unique:str, 
                     P:bool = False, T:bool = False,
                     V2i:bool = False, V2j:bool = False,
                     V3i:bool = False, V3j:bool = False,
-                    M2i:bool = False, M2j:bool = False,
+                    M2i:bool = False, M2j:bool = False, 
                     M3i:bool = False, M3j:bool = False,
                     quick:str = None
                     ) : # TEST OK
@@ -100,9 +100,9 @@ class Frames(GeometryObj) :
         ret = self.obj.SetReleases(unique, ii, jj, StartValue, EndValue)[-1]
 
         if ret == 0 :
-            print_log(f'Frame {unique} set release successfully!!', self.msg_signal)
+            self.print_log(f'Frame {unique} set release successfully!!', self.msg_signal)
         else :
-            print_log(f'Frame {unique} do NOT set release !!!!!!!!', self.msg_signal)
+            self.print_log(f'Frame {unique} do NOT set release !!!!!!!!', self.msg_signal)
     
     def get_release(self, unique:str) : # TEST OK
         Name = unique
@@ -121,9 +121,9 @@ class Frames(GeometryObj) :
         
         ret = self.obj.SetEndLengthOffset(Name, AutoOffset, Length1, Length2, RZ)
         if ret == 0 :
-            print_log(f'Frame {unique} sets rigidzone successfully!!', self.msg_signal)
+            self.print_log(f'Frame {unique} sets rigidzone successfully!!', self.msg_signal)
         else :
-            print_log(f'Frame {unique} does NOT set rigidzone !!!!!!!!', self.msg_signal)
+            self.print_log(f'Frame {unique} does NOT set rigidzone !!!!!!!!', self.msg_signal)
     
     def get_offset(self, unique:str) : # OK
         Name = unique
@@ -169,9 +169,9 @@ class Frames(GeometryObj) :
         ret = self.obj.SetModifiers(Name, Value)[-1]
 
         if ret == 0 :
-            print_log(f'Frame {unique} set modifiers successfully!!', self.msg_signal)
+            self.print_log(f'Frame {unique} set modifiers successfully!!', self.msg_signal)
         else :
-            print_log(f'Frame {unique} do NOT set modifiers !!!!!!!!', self.msg_signal)
+            self.print_log(f'Frame {unique} do NOT set modifiers !!!!!!!!', self.msg_signal)
 
     def get_modifier(self, unique:str) : # TEST OK
         Name = unique
@@ -190,7 +190,7 @@ class Frames(GeometryObj) :
         MyName = []
         ret = self.obj.GetNameList(NumberNames, MyName)
         # print(ret)
-        print_log(f'Total Number of Frame = {ret[0]}', self.msg_signal)
+        self.print_log(f'Total Number of Frame = {ret[0]}', self.msg_signal)
         
         if by_unique :
             return ret[1]
@@ -213,9 +213,9 @@ class Frames(GeometryObj) :
         print(ret)
 
         if ret : 
-            print_log(f'Frame {unique} do not set spring!!', self.msg_signal, self.msg_signal)
+            self.print_log(f'Frame {unique} do not set spring!!', self.msg_signal, self.msg_signal)
         else : 
-            print_log(f'Frame {unique} set spring successfully!!', self.msg_signal, self.msg_signal)
+            self.print_log(f'Frame {unique} set spring successfully!!', self.msg_signal, self.msg_signal)
 
     def assign_local_axis(self, unique: str, ang: float, isSelected = False) :
 
@@ -231,9 +231,9 @@ class Frames(GeometryObj) :
         ret = self.obj.SetLocalAxes(Name, Ang, ItemType)
 
         if ret : 
-            print_log(f'Frame {unique} do not set local axis!!', self.msg_signal)
+            self.print_log(f'Frame {unique} do not set local axis!!', self.msg_signal)
         else : 
-            print_log(f'Frame {unique} set local axis ({ang} deg) successfully!!', self.msg_signal)
+            self.print_log(f'Frame {unique} set local axis ({ang} deg) successfully!!', self.msg_signal)
         
 
     def assign_load(self, unique:str, load_pattern:str, loading:float, is_force:bool = True, dir = 'g', is_replace = False) :
@@ -248,9 +248,9 @@ class Frames(GeometryObj) :
                             Dist1, Dist2, Val1, Val2, Replace = Replace)
         
         if ret == 0 :
-            print_log(f'Frame {unique} assigns {load_pattern} = {loading:.3f} successfully!!', self.msg_signal)
+            self.print_log(f'Frame {unique} assigns {load_pattern} = {loading:.3f} successfully!!', self.msg_signal)
         else :
-            print_log(f'Frame {unique} does NOT assign load !!!!!!!!', self.msg_signal)
+            self.print_log(f'Frame {unique} does NOT assign load !!!!!!!!', self.msg_signal)
 
 
     def unique2label(self, unique:str) :

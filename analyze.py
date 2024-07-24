@@ -1,9 +1,12 @@
 
 class Analyze() :
-    def __init__(self, etabs, print_log) -> None:
+    def __init__(self, etabs, print_log, msg_signal) -> None:
         self.etabs = etabs
         self.sapModel = etabs.sapModel
         self.obj = self.sapModel.Analyze
+
+        self.print_log = print_log
+        self.msg_signal = msg_signal
 
     def run(self) :
         print(f'{" Analysis STARTS ":-^30}')
@@ -15,7 +18,7 @@ class Analyze() :
         else :
             log = "Analysis is NOT finished"
         
-        print(f'{" " + log + " ":-^30}')
+        self.print_log(f'{" " + log + " ":-^30}', self.msg_signal)
         # print(ret)
 
     def set_case_to_run(self, load_cases:list =[], is_replace = True):

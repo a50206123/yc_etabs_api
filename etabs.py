@@ -9,7 +9,6 @@ sys.path.append('\\'.join(cdr))
 import comtypes.client
 
 from setting import *
-from yc_print import *
 
 #### Import ETABS APIs
 import file, points, frames, areas, strips
@@ -21,14 +20,24 @@ from apps.tedchu import TedChuMethods
 
 
 class ETABS :
-    def __init__(self, software : str = 'ETABS', isTedChu = False):
+    def __init__(self, software : str = 'ETABS', isTedChu = False, 
+                 msg_signal = None, print_log = None) :
         self.software = software
         self.etabs = None
         self.sap = None
         self.success = False
 
-        self.msg_signal = msg_signal
-    
+
+        if msg_signal :
+            self.msg_signal = msg_signal
+            self.print_log = print_log
+        else :
+            import yc_print
+            self.msg_signal = yc_print.msg_signal
+            print_log = yc_print.print_log
+            self.print_log = print_log
+
+
         try:  
             #To get the active ETABS object
             # helper = comtypes.client.CreateObject('ETABSv1.Helper') # CSI code
@@ -64,46 +73,46 @@ class ETABS :
         print_log(f'\n{"#"*10}  Initialized  {"#"*10}', self.msg_signal)
 
         #### Loading Other Objects
-        self.Table = tb.Table(etabs, print_log)
+        self.Table = tb.Table(etabs, print_log, self.msg_signal)
         print_log('TABLE', self.msg_signal, add_mod = True)
         
-        self.File = file.File(etabs, print_log)
+        self.File = file.File(etabs, print_log, self.msg_signal)
         print_log('FILE', self.msg_signal, add_mod = True)
 
-        self.Points = points.Points(etabs, print_log)
+        self.Points = points.Points(etabs, print_log, self.msg_signal)
         print_log('POINTS', self.msg_signal, add_mod = True)
 
-        self.Frames = frames.Frames(etabs, print_log)
+        self.Frames = frames.Frames(etabs, print_log, self.msg_signal)
         print_log('FRAMES', self.msg_signal, add_mod = True)
 
-        self.Areas = areas.Areas(etabs, print_log)
+        self.Areas = areas.Areas(etabs, print_log, self.msg_signal)
         print_log('AREAS', self.msg_signal, add_mod = True)
 
-        self.Strips = strips.Strips(etabs, print_log)
+        self.Strips = strips.Strips(etabs, print_log, self.msg_signal)
         print_log('STRIPS', self.msg_signal, add_mod = True)
 
-        self.Define = define.Define(etabs, print_log)
+        self.Define = define.Define(etabs, print_log, self.msg_signal)
         print_log('DEFINE', self.msg_signal, add_mod = True)
 
-        self.Select = select_.Select(etabs, print_log)
+        self.Select = select_.Select(etabs, print_log, self.msg_signal)
         print_log('SELECT', self.msg_signal, add_mod = True)
 
         # self.LoadComb = load_.LoadComb(etabs)
         # mod =  'LOAD COMBINATION'
         # print(f'- {mod:10s} modulus is loaded')
 
-        self.Analyze = analyze.Analyze(etabs, print_log)
+        self.Analyze = analyze.Analyze(etabs, print_log, self.msg_signal)
         print_log('ANALYZE', self.msg_signal, add_mod = True)
 
-        self.Results = results.Results(etabs, print_log)
+        self.Results = results.Results(etabs, print_log, self.msg_signal)
         print_log('RESULT', self.msg_signal, add_mod = True)
 
-        self.Design = design.Design(etabs, print_log)
+        self.Design = design.Design(etabs, print_log, self.msg_signal)
         print_log('Design', self.msg_signal, add_mod = True)
 
-        if isTedChu :
-            self.TedChu = TedChuMethods(etabs, self.msg_signal)
-            print_log('TedChu', self.msg_signal, add_mod = True)
+        # if isTedChu :
+        #     self.TedChu = TedChuMethods(etabs, print_log)
+        #     print_log('TedChu', self.msg_signal, add_mod = True)
         
         print_log(f'\n{"#"*10}  "{self.EDB_name}" is Connected!  {"#"*10}\n\n', self.msg_signal)
 
@@ -159,7 +168,7 @@ class ETABS :
     #### OTHER FUNCTIONS ####
 
 if __name__ == '__main__' :
-    et = ETABS()
+    et = ETABS(isTedChu = True)
     
     # print(et.get_edb_path())
 
