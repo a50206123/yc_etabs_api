@@ -20,7 +20,7 @@ class TedChuMethods :
 
     #### Function Zone ####
     ## Common Operations
-    def release(self, release_end = "") :
+    def release(self, release_end = "", isSelectAfterAssigning = True) :
         self.etabs.model_unlock()
         selected_frames = self.etabs.Select.get(type_='Frame')
         
@@ -30,9 +30,12 @@ class TedChuMethods :
             else :
                 self.etabs.Frames.assign_release(frame, quick = release_end)
         
+        if isSelectAfterAssigning :
+            self.etabs.Select.clear()
+
         self.etabs.refresh()
     
-    def torsion_reduction(self, reduction = 0.1) :
+    def torsion_reduction(self, reduction = 0.1, isSelectAfterAssigning = True) :
         self.etabs.model_unlock()    
         frames = self.etabs.Frames.get_name_list(by_unique = True)
         
@@ -47,10 +50,13 @@ class TedChuMethods :
             if section[0] in prefix and J_orig != reduction :
                 self.etabs.Frames.assign_modifier(frame, T = reduction)
 
+        if isSelectAfterAssigning :
+            self.etabs.Select.clear()
+
         # Return
         self.etabs.refresh()
 
-    def set_nonsway(self) :
+    def set_nonsway(self, isSelectAfterAssigning = True) :
         self.etabs.model_unlock()    
         frames = self.etabs.Frames.get_name_list(by_unique = True)
 
@@ -71,6 +77,8 @@ class TedChuMethods :
             elif not (sect[0] in frame_prefix) and (frame_type != 'sway') :
                 self.etabs.Design.ConcFrame.set_overwrite(frame, 0, 0, quick = 'sway')
         
+        if isSelectAfterAssigning :
+            self.etabs.Select.clear()
 
         # Return
         self.etabs.refresh()
